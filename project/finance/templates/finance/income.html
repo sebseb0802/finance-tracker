@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Income</h1>
+
+    <h2>Saved income:</h2>
+    <ul>
+    {% if income %}
+        {% for i in income %}
+            <li>£{{ i.income_value }} | {{ i.income_source }} | {{ i.income_frequency }} | {{ i.income_startDate}}</li>
+        {% endfor %}
+    {% else %}
+        <li>No income added yet.</li>
+    {% endif %}
+    </ul>
+
+    <h2>Enter new income:</h2>
+    {% if message %}
+        <em><strong><p>{{message}}</p></strong></em>
+    {% endif %}
+    <form action="{% url 'finance:addIncome' %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <label for="income_value">Value: £</label>
+            <input type="text" id="income_value" name="income_value"><br><br>
+
+
+            <label for="income_source">Source: </label>
+            <input type="text" id="income_source" name="income_source"><br>
+
+
+            <p>Frequency:</p>
+            <input type="radio" id="one-off" name="income_frequency" value="One-off">
+            <label for="one-off">One-off</label><br>
+
+            <input type="radio" id="monthly" name="income_frequency" value="Monthly">
+            <label for="monthly">Monthly</label><br>
+
+            <input type="radio" id="yearly" name="income_frequency" value="Yearly">
+            <label for="yearly">Yearly</label><br><br>
+
+
+            <label for="income_startDate">Start date: </label>
+            <input type="date" id="income_startDate" name="income_startDate" value=date><br><br>
+
+            <input type="submit" value="Add income">
+        </fieldset>
+    </form>
+</body>
+</html>
