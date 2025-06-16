@@ -8,5 +8,7 @@ urlpatterns = [
     path("income/", views.income, name="income"),
     path("addIncome/", views.addIncome, name="addIncome"),
     path("expenses/", views.expenses, name="expenses"),
-    path("addExpense", views.addExpense, name="addExpense")
+    path("addExpense", views.addExpense, name="addExpense"),
+    path("budgets/", views.budgets, name="budgets"),
+    path("addBudget/", views.addBudget, name="addBudget")
 ]

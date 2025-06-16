@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Budgets</h1>
+
+    <h2>Saved budgets:</h2>
+    <ul>
+    {% if budgets %}
+        {% for i in budgets %}
+            <li>£{{ i.value }} | Remaining value to be spent: £{{ i.remainingValue }} | {{ i.category }} | {{ i.frequency }} | {{ i.startDate}}</li>
+        {% endfor %}
+    {% else %}
+        <li>No budgets added yet.</li>
+    {% endif %}
+    </ul>
+
+    <h2>Enter new budget:</h2>
+    {% if message %}
+        <em><strong><p>{{message}}</p></strong></em>
+    {% endif %}
+    <form action="{% url 'finance:addBudget' %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <label for="value">Value: £</label>
+            <input type="text" id="value" name="value"><br><br>
+
+            <p>Category:</p>
+            <input type="radio" id="Entertainment" name="category" value="Entertainment">
+            <label for="Entertainment">Entertainment</label><br>
+
+            <input type="radio" id="Food and Drink" name="category" value="Food and Drink">
+            <label for="Food and Drink">Food and Drink</label><br>
+
+            <input type="radio" id="Travel" name="category" value="Travel">
+            <label for="Travel">Travel</label><br><br>
+
+
+            <p>Frequency:</p>
+            <input type="radio" id="monthly" name="frequency" value="Monthly">
+            <label for="monthly">Monthly</label><br>
+
+            <input type="radio" id="yearly" name="frequency" value="Yearly">
+            <label for="yearly">Yearly</label><br><br>
+
+
+            <label for="startDate">Start date: </label>
+            <input type="date" id="startDate" name="startDate" value=date><br><br>
+
+            <input type="submit" value="Add budget">
+        </fieldset>
+    </form>
+</body>
+</html>

@@ -11,7 +11,6 @@ class User(models.Model):
     
 class FinancialObject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # A single user can have many instances of income
-    source = models.CharField(default="N/A", max_length=200)
     value = models.IntegerField(default=0)
     frequency = models.CharField(default="Monthly", max_length=200)
     startDate = models.DateField(default=datetime.date.today)
@@ -21,7 +20,12 @@ class FinancialObject(models.Model):
         abstract = True # Makes the "FinancialObject" class an Abstract Base Class (ABC)
 
 class Income(FinancialObject):
-    pass
+    source = models.CharField(default="N/A", max_length=200)
     
 class Expense(FinancialObject):
+    source = models.CharField(default="N/A", max_length=200)
     category = models.CharField(default="Entertainment", max_length=200)
+
+class Budget(FinancialObject):
+    category = models.CharField(default="Entertainment", max_length=200)
+    remainingValue = models.IntegerField(default=0)
