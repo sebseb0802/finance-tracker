@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Expenses</h1>
+
+    <h2>Saved expenses:</h2>
+    <ul>
+    {% if expenses %}
+        {% for i in expenses %}
+            <li>£{{ i.value }} | {{ i.category }} | {{ i.source }} | {{ i.frequency }} | {{ i.startDate}}</li>
+        {% endfor %}
+    {% else %}
+        <li>No expenses added yet.</li>
+    {% endif %}
+    </ul>
+
+    <h2>Enter new expense:</h2>
+    {% if message %}
+        <em><strong><p>{{message}}</p></strong></em>
+    {% endif %}
+    <form action="{% url 'finance:addExpense' %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <label for="value">Value: £</label>
+            <input type="text" id="value" name="value"><br><br>
+
+            <p>Category:</p>
+            <input type="radio" id="Entertainment" name="category" value="Entertainment">
+            <label for="Entertainment">Entertainment</label><br>
+
+            <input type="radio" id="Food and Drink" name="category" value="Food and Drink">
+            <label for="Food and Drink">Food and Drink</label><br>
+
+            <input type="radio" id="Travel" name="category" value="Travel">
+            <label for="Travel">Travel</label><br><br>
+
+
+            <label for="source">Source: </label>
+            <input type="text" id="source" name="source"><br>
+
+
+            <p>Frequency:</p>
+            <input type="radio" id="one-off" name="frequency" value="One-off">
+            <label for="one-off">One-off</label><br>
+
+            <input type="radio" id="monthly" name="frequency" value="Monthly">
+            <label for="monthly">Monthly</label><br>
+
+            <input type="radio" id="yearly" name="frequency" value="Yearly">
+            <label for="yearly">Yearly</label><br><br>
+
+
+            <label for="startDate">Start date: </label>
+            <input type="date" id="startDate" name="startDate" value=date><br><br>
+
+            <input type="submit" value="Add expense">
+        </fieldset>
+    </form>
+</body>
+</html>

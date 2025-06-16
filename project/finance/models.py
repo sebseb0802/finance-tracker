@@ -8,13 +8,20 @@ class User(models.Model):
 
     def __str__(self):
         return self.user_username
-
-class Income(models.Model):
+    
+class FinancialObject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # A single user can have many instances of income
-    income_value = models.IntegerField(default=0)
-    income_source = models.CharField(default="Work", max_length=200)
-    income_frequency = models.CharField(default="Monthly", max_length=200)
-    income_startDate = models.DateField(default=datetime.date.today)
+    source = models.CharField(default="N/A", max_length=200)
+    value = models.IntegerField(default=0)
+    frequency = models.CharField(default="Monthly", max_length=200)
+    startDate = models.DateField(default=datetime.date.today)
+    addDate = models.DateField(default=datetime.date.today)
 
-    def __str__(self):
-        return str(self.income_value)
+    class Meta:
+        abstract = True # Makes the "FinancialObject" class an Abstract Base Class (ABC)
+
+class Income(FinancialObject):
+    pass
+    
+class Expense(FinancialObject):
+    category = models.CharField(default="Entertainment", max_length=200)

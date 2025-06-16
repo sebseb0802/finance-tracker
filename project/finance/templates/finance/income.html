@@ -12,7 +12,7 @@
     <ul>
     {% if income %}
         {% for i in income %}
-            <li>£{{ i.income_value }} | {{ i.income_source }} | {{ i.income_frequency }} | {{ i.income_startDate}}</li>
+            <li>£{{ i.value }} | {{ i.source }} | {{ i.frequency }} | {{ i.startDate}}</li>
         {% endfor %}
     {% else %}
         <li>No income added yet.</li>
@@ -26,27 +26,27 @@
     <form action="{% url 'finance:addIncome' %}" method="post">
         {% csrf_token %}
         <fieldset>
-            <label for="income_value">Value: £</label>
-            <input type="text" id="income_value" name="income_value"><br><br>
+            <label for="value">Value: £</label>
+            <input type="text" id="value" name="value"><br><br>
 
 
-            <label for="income_source">Source: </label>
-            <input type="text" id="income_source" name="income_source"><br>
+            <label for="source">Source: </label>
+            <input type="text" id="source" name="source"><br>
 
 
             <p>Frequency:</p>
-            <input type="radio" id="one-off" name="income_frequency" value="One-off">
+            <input type="radio" id="one-off" name="frequency" value="One-off">
             <label for="one-off">One-off</label><br>
 
-            <input type="radio" id="monthly" name="income_frequency" value="Monthly">
+            <input type="radio" id="monthly" name="frequency" value="Monthly">
             <label for="monthly">Monthly</label><br>
 
-            <input type="radio" id="yearly" name="income_frequency" value="Yearly">
+            <input type="radio" id="yearly" name="frequency" value="Yearly">
             <label for="yearly">Yearly</label><br><br>
 
 
-            <label for="income_startDate">Start date: </label>
-            <input type="date" id="income_startDate" name="income_startDate" value=date><br><br>
+            <label for="startDate">Start date: </label>
+            <input type="date" id="startDate" name="startDate" value=date><br><br>
 
             <input type="submit" value="Add income">
         </fieldset>
