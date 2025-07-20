@@ -10,9 +10,8 @@ class User(models.Model):
         return self.user_username
     
 class FinancialObject(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # A single user can have many instances of income
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # A single user can have many instances of income/expenses/budgets
     value = models.IntegerField(default=0)
-    frequency = models.CharField(default="Monthly", max_length=200)
     startDate = models.DateField(default=datetime.date.today)
     addDate = models.DateField(default=datetime.date.today)
 
@@ -21,11 +20,15 @@ class FinancialObject(models.Model):
 
 class Income(FinancialObject):
     source = models.CharField(default="N/A", max_length=200)
+    frequency = models.CharField(default="Monthly", max_length=200)
     
 class Expense(FinancialObject):
     source = models.CharField(default="N/A", max_length=200)
     category = models.CharField(default="Entertainment", max_length=200)
+    frequency = models.CharField(default="Monthly", max_length=200)
 
 class Budget(FinancialObject):
+    yearlyValue = models.IntegerField(default=0)
     category = models.CharField(default="Entertainment", max_length=200)
-    remainingValue = models.IntegerField(default=0)
+    remainingValueMonth = models.IntegerField(default=0)
+    remainingValueYear = models.IntegerField(default=0)

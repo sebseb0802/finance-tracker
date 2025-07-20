@@ -12,7 +12,7 @@
     <ul>
     {% if budgets %}
         {% for i in budgets %}
-            <li>£{{ i.value }} | Remaining value to be spent: £{{ i.remainingValue }} | {{ i.category }} | {{ i.frequency }} | {{ i.startDate}}</li>
+            <li>£{{ i.value }} (in a month) | £{{ i.yearlyValue }} (in a year) | Remaining value to be spent (in this month): £{{ i.remainingValueMonth }} | Remaining value to be spent (in this year): £{{ i.remainingValueYear }} | {{ i.category }} | {{ i.startDate}}</li>
         {% endfor %}
     {% else %}
         <li>No budgets added yet.</li>
@@ -26,8 +26,8 @@
     <form action="{% url 'finance:addBudget' %}" method="post">
         {% csrf_token %}
         <fieldset>
-            <label for="value">Value: £</label>
-            <input type="text" id="value" name="value"><br><br>
+            <label for="value">Value (in a month): £</label>
+            <input type="text" id="value" name="value"><br>
 
             <p>Category:</p>
             <input type="radio" id="Entertainment" name="category" value="Entertainment">
@@ -38,15 +38,6 @@
 
             <input type="radio" id="Travel" name="category" value="Travel">
             <label for="Travel">Travel</label><br><br>
-
-
-            <p>Frequency:</p>
-            <input type="radio" id="monthly" name="frequency" value="Monthly">
-            <label for="monthly">Monthly</label><br>
-
-            <input type="radio" id="yearly" name="frequency" value="Yearly">
-            <label for="yearly">Yearly</label><br><br>
-
 
             <label for="startDate">Start date: </label>
             <input type="date" id="startDate" name="startDate" value=date><br><br>
