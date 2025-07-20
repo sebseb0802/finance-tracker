@@ -44,8 +44,10 @@ def addIncome(request):
             }
         )
     else:
+        # Create this income and save it to the database
         income = Income(user=User.objects.get(), value=input_value, source=input_source, frequency=input_frequency, startDate=input_startDate)
         income.save()
+
         return HttpResponseRedirect(f"{reverse('finance:income')}?message=Income added successfully.")
         
 def expenses(request):
@@ -78,16 +80,19 @@ def addExpense(request):
             }
         )
     else:
-        if Budget.objects.filter(category=input_category):
+        if Budget.objects.filter(category=input_category): 
+            # If a budget of this category of expense exists, 
+            # subtract the value of this expense from the values for remaining monthly and yearly spending of the budget
             remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
             remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
 
             Budget.objects.filter(category=input_category).update(remainingValueMonth=(remainingValueMonth-int(input_value)))
             Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-int(input_value)))
         
-
+        # Create this expense and save it to the database
         expense = Expense(user=User.objects.get(), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
         expense.save()
+
         return HttpResponseRedirect(f"{reverse('finance:expenses')}?message=Expense added successfully.")
     
 def budgets(request):
@@ -105,7 +110,7 @@ def budgets(request):
 def addBudget(request):
     try:
         input_category = request.POST["category"]
-        input_value = int(request.POST["value"])
+        input_value = int(request.POST["value"]) # Convert input string to integer to avoid errors during multiplication below
         input_startDate = request.POST["startDate"]
     except:
         budgets = Budget.objects.all()
@@ -121,23 +126,32 @@ def addBudget(request):
         deletedBudget = False
         
         if Budget.objects.filter(category=input_category):
-            Budget.objects.filter(category=input_category).delete() # User cannot have more than one budget for a category
+            # If a budget of this category already exists, delete the one that already exists, 
+            # as a user cannot have more than one budget for a category
+            Budget.objects.filter(category=input_category).delete()
             deletedBudget = True
 
-        yearlyValue = 12 * input_value
+        yearlyValue = 12 * input_value # yearlyValue is 12-times the monthly (input) value
+        
+        # Create this budget and save it to the database
         budget = Budget(user=User.objects.get(), category=input_category, value=input_value, remainingValueMonth=input_value, startDate=input_startDate, yearlyValue=yearlyValue, remainingValueYear=yearlyValue)
         budget.save()
 
         if Expense.objects.filter(category=input_category):
+            # If expenses for this category already exist, 
+            # create a list of them
             requiredExpenses = get_list_or_404(Expense.objects.filter(category=input_category))
                     
             for i in range(len(requiredExpenses)):
+                # Iterate through the list of expenses and subtract their respective values from 
+                # the values for remaining monthly and yearly spending of this budget
                 expenseValue = requiredExpenses[i].value
                 remainingValueMonth = Budget.objects.filter(category=input_category).get().remainingValueMonth - expenseValue
                 remainingValueYear = Budget.objects.filter(category=input_category).get().remainingValueYear - expenseValue
                 Budget.objects.filter(category=input_category).update(remainingValueMonth=remainingValueMonth, remainingValueYear=remainingValueYear)
 
         if deletedBudget == True:
+            # If a previous budget was deleted, inform the user in the returned message
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully (previous budget with the same category and frequency was deleted).")
         else:
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully.")
