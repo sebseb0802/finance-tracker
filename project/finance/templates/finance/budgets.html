@@ -27,7 +27,8 @@
         {% csrf_token %}
         <fieldset>
             <label for="value">Value (in a month): £</label>
-            <input type="text" id="value" name="value"><br>
+            <input type="text" id="value" name="value">
+
 
             <p>Category:</p>
             <input type="radio" id="Entertainment" name="category" value="Entertainment">
@@ -37,7 +38,29 @@
             <label for="Food and Drink">Food and Drink</label><br>
 
             <input type="radio" id="Travel" name="category" value="Travel">
-            <label for="Travel">Travel</label><br><br>
+            <label for="Travel">Travel</label><br>
+
+            <input type="radio" id="Education" name="category" value="Education">
+            <label for="Education">Education</label><br>
+
+            <input type="radio" id="Clothing" name="category" value="Clothing">
+            <label for="Clothing">Clothing</label><br>
+
+            <input type="radio" id="Insurance" name="category" value="Insurance">
+            <label for="Insurance">Insurance</label><br>
+
+            <input type="radio" id="Healthcare" name="category" value="Healthcare">
+            <label for="Healthcare">Healthcare</label><br>
+
+            <input type="radio" id="Housing" name="category" value="Housing">
+            <label for="Housing">Housing</label><br>
+
+            <input type="radio" id="Debt" name="category" value="Debt">
+            <label for="Debt">Debt</label><br>
+
+            <input type="radio" id="Gifts" name="category" value="Gifts">
+            <label for="Gifts">Gifts</label><br><br>
+
 
             <label for="startDate">Start date: </label>
             <input type="date" id="startDate" name="startDate" value=date><br><br>
