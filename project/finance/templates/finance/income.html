@@ -4,9 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'finance/income-style.css' %}">
 </head>
 <body>
-    <h1>Income</h1>
+    <div class="header">
+        <ul class="header-left-side">
+            <li>[Logo]</li>
+            <li>Finance app</li>
+            <li>•</li>
+            <li>Income</li>
+        </ul>
+        <ul class="header-right-side">
+            <li>
+                [User]
+            </li>
+            <li>
+                <button class="header-log-out">Log out</button>
+            </li>
+        </ul>
+    </div>
 
     <h2>Saved income:</h2>
     <ul>

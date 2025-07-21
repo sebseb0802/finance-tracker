@@ -166,7 +166,14 @@ def addExpense(request):
             remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
 
             Budget.objects.filter(category=input_category).update(remainingValueMonth=(remainingValueMonth-int(input_value)))
-            Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-int(input_value)))
+
+            if input_frequency == "Monthly":
+                # If the frequency of the expense is monthly, then subtract 12-times the value of 
+                # the expense from the remaining value to be spent of the budget for the entire year
+                Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-(12 * int(input_value))))
+            else:
+                # Else, subtract only the value of the expense
+                Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-int(input_value)))
         
         # Create this expense and save it to the database
         expense = Expense(user=User.objects.get(), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
@@ -226,7 +233,15 @@ def addBudget(request):
                 # the values for remaining monthly and yearly spending of this budget
                 expenseValue = requiredExpenses[i].value
                 remainingValueMonth = Budget.objects.filter(category=input_category).get().remainingValueMonth - expenseValue
-                remainingValueYear = Budget.objects.filter(category=input_category).get().remainingValueYear - expenseValue
+
+                if requiredExpenses[i].frequency == "Monthly":
+                    # If an expense has a monthly frequency, then subtract 12-times the value of the expense from the
+                    # remaining value to be spent for the budget for this year
+                    remainingValueYear = Budget.objects.filter(category=input_category).get().remainingValueYear - (12 * expenseValue)
+                else:
+                    # Else, subtract only the value of the expense
+                    remainingValueYear = Budget.objects.filter(category=input_category).get().remainingValueYear - expenseValue
+
                 Budget.objects.filter(category=input_category).update(remainingValueMonth=remainingValueMonth, remainingValueYear=remainingValueYear)
 
         if deletedBudget == True:
