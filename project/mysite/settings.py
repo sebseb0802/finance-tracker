@@ -34,6 +34,9 @@ CSRF_TRUSTED_ORIGINS = ["https://localhost:8000", "https://localhost:8001", "htt
 
 INSTALLED_APPS = [
     "finance.apps.FinanceConfig",
+    "dashboard.apps.DashboardConfig",
+    "authentication.apps.AuthenticationConfig",
+    "reports.apps.ReportsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

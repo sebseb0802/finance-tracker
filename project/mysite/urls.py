@@ -20,6 +20,9 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    path("", include("dashboard.urls")),
     path("finance/", include("finance.urls")),
+    path("authentication/", include("authentication.urls")),
+    path("reports/", include("reports.urls")),
     path("admin/", admin.site.urls)
 ]
