@@ -6,6 +6,7 @@
     <title>Dashboard</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'dashboard/style.css' %}">
+    <script src="{% static 'dashboard/script.js' %}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("incomes-button").onclick = function() {
@@ -25,7 +26,24 @@
 <body>
     <div class="header">
         <ul class="header-left-side">
-            <li>[Logo]</li>
+            <li>
+                <button id="open-sidebar">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect y="3" width="20" height="2" fill="#fff"/>
+                        <rect y="9" width="20" height="2" fill="#fff"/>
+                        <rect y="15" width="20" height="2" fill="#fff"/>
+                    </svg>
+                </button>
+                <div id="sidebar" class="sidebar">
+                    <ul class="sidebar-list">
+                        <li><a href="javascript:void(0)" id="close-sidebar">&times;</a></li>
+                        <li><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'finance:income' %}">Income</a></li>
+                        <li><a href="{% url 'finance:expenses' %}">Expenses</a></li>
+                        <li><a href="{% url 'finance:budgets' %}">Budgets</a></li>
+                    </ul>
+                </div>
+            </li>
             <li>Finance app</li>
             <li>•</li>
             <li>Dashboard</li>
