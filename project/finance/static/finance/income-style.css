@@ -1,20 +1,48 @@
+.saved-income-label {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #e5e7eb;
+    color: black;
+}
+
+.income-cards-section {
+    margin: 10px;
+}
+
 .income-cards-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .income-card {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     border-radius: 5px;
+    width: 200px;
+    height: 250px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    background-color: #38f645;
+    background-color: #3deb7a;
+}
+
+.income-card:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.income-card-icons {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .income-card-info {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: auto auto;
-    gap: 8px 16px;
+    display: flex;
+    flex-direction: column;
     text-align: center;
-    color: #000000;
+    color: #f9faf8;
 }
