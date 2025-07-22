@@ -33,11 +33,11 @@
     cursor: pointer;
 }
 
-.income-card-icons {
+.income-card-icon {
     width: 100%;
     padding: 0 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
 }
 
 .income-card-info {
