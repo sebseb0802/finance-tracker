@@ -1,53 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+{% extends "dashboard/base.html" %}
+
+{% block title %}Income{% endblock %}
+
+{% block extra_css %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'finance/income-style.css' %}">
-    <script src="{% static 'finance/income-script.js' %}"></script>
-</head>
-<body>
-    <div class="header">
-        <ul class="header-left-side">
-            <li>
-                <button id="open-sidebar">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <rect y="3" width="20" height="2" fill="#fff"/>
-                        <rect y="9" width="20" height="2" fill="#fff"/>
-                        <rect y="15" width="20" height="2" fill="#fff"/>
-                    </svg>
-                </button>
-                <div id="sidebar" class="sidebar">
-                    <ul class="sidebar-list">
-                        <li><a href="javascript:void(0)" id="close-sidebar">&times;</a></li>
-                        <li><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
-                        <li><a href="{% url 'finance:income' %}">Income</a></li>
-                        <li><a href="{% url 'finance:expenses' %}">Expenses</a></li>
-                        <li><a href="{% url 'finance:budgets' %}">Budgets</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li>Finance app</li>
-            <li>•</li>
-            <li>Income</li>
-        </ul>
-        <ul class="header-right-side">
-            <li>
-                [User]
-            </li>
-            <li>
-                <button class="header-log-out">Log out</button>
-            </li>
-        </ul>
-    </div>
+{% endblock %}
 
+{% block extra_js %}
+    <script src="{% static 'finance/income-script.js' %}"></script>
+{% endblock %}
+
+{% block content %}
     <h2>Saved income:</h2>
-    <ul>
+    <ul class="income-cards-group">
     {% if income %}
         {% for i in income %}
-            <li>£{{ i.value }} | {{ i.source }} | {{ i.frequency }} | {{ i.startDate}}</li>
+            <li class="income-card">
+                <div class="income-card-info">
+                    <div><strong>Value</strong></div>
+                    <div><strong>Source</strong></div>
+                    <div><strong>Frequency</strong></div> 
+                    <div><strong>Start date</strong></div> 
+                    <div><strong>Date added</strong></div> 
+                    <div>£{{ i.value }}</div>                   
+                    <div>{{ i.source }}</div>                 
+                    <div>{{ i.frequency }}</div>
+                    <div>{{ i.startDate }}</div>
+                    <div>{{ i.addDate }}</div>
+                </div>
+            </li>
         {% endfor %}
     {% else %}
         <li>No income added yet.</li>
@@ -86,5 +68,4 @@
             <input type="submit" value="Add income">
         </fieldset>
     </form>
-</body>
-</html>
+{% endblock %}

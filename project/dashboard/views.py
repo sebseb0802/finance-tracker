@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 # Create your views here.
-def index(request):
+def dashboard(request):
     # Avoid repetition of summation of FinancialObjects below (4 times) through the use of the following function
     def sumFinancialObjectsFromList(l, timeframe="Month"):
         sum = 0
@@ -77,7 +77,7 @@ def index(request):
 
     return render(
         request, 
-        "dashboard/index.html", 
+        "dashboard/dashboard.html", 
         {
             "user": user,
             "current_month": current_month,

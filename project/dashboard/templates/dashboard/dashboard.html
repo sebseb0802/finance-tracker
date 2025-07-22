@@ -1,0 +1,92 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard-style.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById("incomes-button").onclick = function() {
+                    window.location.href = "{% url 'finance:income' %}";
+                };
+
+                document.getElementById("expenses-button").onclick = function() {
+                    window.location.href = "{% url 'finance:expenses' %}";
+                };
+
+                document.getElementById("budgets-button").onclick = function() {
+                    window.location.href = "{% url 'finance:budgets' %}";
+                };
+            });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="welcome">
+        {% if user %}
+            <h2>Welcome, {{ user.user_username }}.</h2>
+        {% else %}
+            <h2>Welcome.</h2>
+        {% endif %}
+    </div>
+
+    <div class="net-income-info">
+        <div class="left-side">
+            <h3>For the month of {{ current_month }}:</h3>
+            <h4>Total income: £{{ current_month_income_total }}</h4>
+            <h4>Total expenses: £ {{ current_month_expenses_total }}</h4>
+            <h4>Net income: £ {{ current_month_net_income }}</h4>
+        </div>
+
+        <div class="right-side">
+            <h3>For the year of {{ current_year }}:</h3>
+            <h4>Total income: £{{ current_year_income_total }}</h4>
+            <h4>Total expenses: £ {{ current_year_expenses_total }}</h4>
+            <h4>Net income: £ {{ current_year_net_income }}</h4>
+        </div>
+    </div>
+
+    <div class="option-cards-section">
+        <ul class="option-cards-group">
+            <li class="option-card incomes-card">
+                <div class="incomes-top">
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5295 8.35186C12.9571 8.75995 12.2566 9 11.5 9C9.567 9 8 7.433 8 5.5C8 3.567 9.567 2 11.5 2C12.753 2 13.8522 2.65842 14.4705 3.64814M6 20.0872H8.61029C8.95063 20.0872 9.28888 20.1277 9.61881 20.2086L12.3769 20.8789C12.9753 21.0247 13.5988 21.0388 14.2035 20.9214L17.253 20.3281C18.0585 20.1712 18.7996 19.7854 19.3803 19.2205L21.5379 17.1217C22.154 16.5234 22.154 15.5524 21.5379 14.9531C20.9832 14.4134 20.1047 14.3527 19.4771 14.8103L16.9626 16.6449C16.6025 16.9081 16.1643 17.0498 15.7137 17.0498H13.2855L14.8311 17.0498C15.7022 17.0498 16.4079 16.3633 16.4079 15.5159V15.2091C16.4079 14.5055 15.9156 13.892 15.2141 13.7219L12.8286 13.1417C12.4404 13.0476 12.0428 13 11.6431 13C10.6783 13 8.93189 13.7988 8.93189 13.7988L6 15.0249M20 6.5C20 8.433 18.433 10 16.5 10C14.567 10 13 8.433 13 6.5C13 4.567 14.567 3 16.5 3C18.433 3 20 4.567 20 6.5ZM2 14.6L2 20.4C2 20.9601 2 21.2401 2.10899 21.454C2.20487 21.6422 2.35785 21.7951 2.54601 21.891C2.75992 22 3.03995 22 3.6 22H4.4C4.96005 22 5.24008 22 5.45399 21.891C5.64215 21.7951 5.79513 21.6422 5.89101 21.454C6 21.2401 6 20.9601 6 20.4V14.6C6 14.0399 6 13.7599 5.89101 13.546C5.79513 13.3578 5.64215 13.2049 5.45399 13.109C5.24008 13 4.96005 13 4.4 13L3.6 13C3.03995 13 2.75992 13 2.54601 13.109C2.35785 13.2049 2.20487 13.3578 2.10899 13.546C2 13.7599 2 14.0399 2 14.6Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <div class="card-heading">Income</div>
+                    <div class="card-body">Add any income that you receive.</div>
+                </div>
+                
+                <div class="incomes-bottom">
+                    <button id="incomes-button" class="card-button">Go</button>
+                </div>
+            </li>
+
+            <li class="option-card expenses-card">
+                <div class="expenses-top">
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 11V15M18 9V13M17 4C19.4487 4 20.7731 4.37476 21.4321 4.66544C21.5199 4.70415 21.5638 4.72351 21.6904 4.84437C21.7663 4.91682 21.9049 5.12939 21.9405 5.22809C22 5.39274 22 5.48274 22 5.66274V16.4111C22 17.3199 22 17.7743 21.8637 18.0079C21.7251 18.2454 21.5914 18.3559 21.3319 18.4472C21.0769 18.5369 20.562 18.438 19.5322 18.2401C18.8114 18.1017 17.9565 18 17 18C14 18 11 20 7 20C4.55129 20 3.22687 19.6252 2.56788 19.3346C2.48012 19.2958 2.43624 19.2765 2.3096 19.1556C2.23369 19.0832 2.09512 18.8706 2.05947 18.7719C2 18.6073 2 18.5173 2 18.3373L2 7.58885C2 6.68009 2 6.2257 2.13628 5.99214C2.2749 5.75456 2.40859 5.64412 2.66806 5.55281C2.92314 5.46305 3.43803 5.56198 4.46783 5.75985C5.18862 5.89834 6.04348 6 7 6C10 6 13 4 17 4ZM14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5C13.3807 9.5 14.5 10.6193 14.5 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <div class="card-heading">Expenses</div>
+                    <div class="card-body">Add any expenses that you have.</div>
+                </div>
+                
+                <div class="expenses-bottom">
+                    <button id="expenses-button" class="card-button">Go</button>
+                </div>
+            </li>
+
+            <li class="option-card budgets-card">
+                <div class="budgets-top">
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 17V16.8498C2 16.5333 2 16.3751 2.02421 16.2209C2.0457 16.084 2.08136 15.9497 2.13061 15.8202C2.18609 15.6743 2.2646 15.5369 2.42162 15.2622L6 9M2 17C2 19.2091 3.79086 21 6 21C8.20914 21 10 19.2091 10 17M2 17V16.8C2 16.52 2 16.38 2.0545 16.273C2.10243 16.1789 2.17892 16.1024 2.273 16.0545C2.37996 16 2.51997 16 2.8 16H9.2C9.48003 16 9.62004 16 9.727 16.0545C9.82108 16.1024 9.89757 16.1789 9.9455 16.273C10 16.38 10 16.52 10 16.8V17M6 9L9.57838 15.2622C9.7354 15.5369 9.81391 15.6743 9.86939 15.8202C9.91864 15.9497 9.9543 16.084 9.97579 16.2209C10 16.3751 10 16.5333 10 16.8498V17M6 9L18 7M14 15V14.8498C14 14.5333 14 14.3751 14.0242 14.2209C14.0457 14.084 14.0814 13.9497 14.1306 13.8202C14.1861 13.6743 14.2646 13.5369 14.4216 13.2622L18 7M14 15C14 17.2091 15.7909 19 18 19C20.2091 19 22 17.2091 22 15M14 15V14.8C14 14.52 14 14.38 14.0545 14.273C14.1024 14.1789 14.1789 14.1024 14.273 14.0545C14.38 14 14.52 14 14.8 14H21.2C21.48 14 21.62 14 21.727 14.0545C21.8211 14.1024 21.8976 14.1789 21.9455 14.273C22 14.38 22 14.52 22 14.8V15M18 7L21.5784 13.2622C21.7354 13.5369 21.8139 13.6743 21.8694 13.8202C21.9186 13.9497 21.9543 14.084 21.9758 14.2209C22 14.3751 22 14.5333 22 14.8498V15M12 3V8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <div class="card-heading">Budgets</div>
+                    <div class="card-body">Create budgets to help manage your spending.</div>
+                </div>
+                
+                <div class="budgets-bottom">
+                    <button id="budgets-button" class="card-button">Go</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

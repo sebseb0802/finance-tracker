@@ -1,0 +1,74 @@
+.welcome {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #e5e7eb;
+    color: black;
+}
+
+.net-income-info {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+}
+
+.option-cards-section, .option-cards-group {
+    justify-content: space-around;
+    margin: 20px;
+    background-color: #e5e7eb;
+}
+
+.option-card {
+    display: flex;
+    max-width: 400px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 100px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-heading {
+    font-weight: 700;
+    font-size: 24px;
+    color: #f9faf8;
+}
+
+.card-body {
+    font-size: 18px;
+    color: #f9faf8;
+    margin-bottom: 10px;
+}
+
+.card-button {
+    background-color: #f9faf8;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 20px;
+    font-weight: 600;
+}
+
+.incomes-card {
+    background-color: #3deb7a;
+}
+
+.expenses-card {
+    background-color: #ff4747;
+}
+
+.budgets-card {
+    background-color: #42b3ec;
+}
+
+#incomes-button {
+    color: #38f645;
+}
+
+#expenses-button {
+    color: #f63838;
+}
+
+#budgets-button {
+    color: #3882f6;
+}
