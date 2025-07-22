@@ -41,36 +41,44 @@
         </ul>
     </div>
 
-    <h2>Enter new income:</h2>
+    <div class="enter-income-label">
+        <h2>Enter new income:</h2>
+    </div>
     {% if message %}
         <em><strong><p>{{message}}</p></strong></em>
     {% endif %}
-    <form action="{% url 'finance:addIncome' %}" method="post">
+    <form action="{% url 'finance:addIncome' %}" method="post" class="income-form">
         {% csrf_token %}
-        <fieldset>
-            <label for="value">Value: £</label>
-            <input type="text" id="value" name="value"><br><br>
+        <div class="form-components">
+            <div class="form-labels-and-answers">
+                <div class="form-labels">
+                    <label for="value"><strong>Value</strong>    £</label>
 
+                    <label for="source"><strong>Source</strong></label>
 
-            <label for="source">Source: </label>
-            <input type="text" id="source" name="source"><br>
+                    <div><strong>Frequency</strong></div>
 
+                    <label for="startDate"><strong>Start date</strong></label>
+                </div>
+                <div class="form-answers">
+                    <input type="text" id="value" name="value">
 
-            <p>Frequency:</p>
-            <input type="radio" id="one-off" name="frequency" value="One-off">
-            <label for="one-off">One-off</label><br>
+                    <input type="text" id="source" name="source">
+                    
+                    <select id="frequency" name="frequency">
+                        <option value="One-off">One-off</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                    </select> 
 
-            <input type="radio" id="monthly" name="frequency" value="Monthly">
-            <label for="monthly">Monthly</label><br>
+                    <input type="date" id="startDate" name="startDate" value=date>
+                </div>
+            </div>
 
-            <input type="radio" id="yearly" name="frequency" value="Yearly">
-            <label for="yearly">Yearly</label><br><br>
-
-
-            <label for="startDate">Start date: </label>
-            <input type="date" id="startDate" name="startDate" value=date><br><br>
-
-            <input type="submit" value="Add income">
-        </fieldset>
+            <div class="submit">
+                <input type="submit" value="Add income">
+            </div>
+        </div>
+        
     </form>
 {% endblock %}
