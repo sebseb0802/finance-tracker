@@ -1,0 +1,38 @@
+{% extends "dashboard/navbar-and-sidebar-base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block header-title %}{% endblock %}
+
+{% block extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'finance/finance-base-style.css' %}">
+    {% block finance_extra_css %}{% endblock %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
+
+{% block content %}
+    <div class="saved-label">
+        <h2>{% block saved-label %}{% endblock %}</h2>
+    </div>
+
+    <div class="cards-section">
+        <ul class="cards-group">
+        {% block presence-check-and-list %}
+        {% endblock %}
+        </ul>
+    </div>
+
+    <div class="enter-label">
+        <h2>{% block enter-label %}{% endblock %}</h2>
+    </div>
+
+    {% if message %}
+        <em><strong><p>{{message}}</p></strong></em>
+    {% endif %}
+
+    {% block form %}
+    {% endblock %}
+{% endblock %}
