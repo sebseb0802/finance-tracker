@@ -9,10 +9,6 @@
     <link rel="stylesheet" href="{% static 'finance/income-style.css' %}">
 {% endblock %}
 
-{% block extra_js %}
-    <script src="{% static 'finance/income-script.js' %}"></script>
-{% endblock %}
-
 {% block saved-label %}Saved income:{% endblock %}
 
 {% block presence-check-and-list %}
@@ -39,38 +35,38 @@
 {% block enter-label %}Enter new income:{% endblock %}
 
 {% block form %}
-    <form action="{% url 'finance:addIncome' %}" method="post" class="income-form">
-    {% csrf_token %}
-    <div class="form-components">
-    <div class="form-labels-and-answers">
-        <div class="form-labels">
-            <label for="value"><strong>Value</strong>    £</label>
+    <form action="{% url 'finance:addIncome' %}" method="post" class="form">
+        {% csrf_token %}
+        <div class="form-components">
+            <div class="form-labels-and-answers">
+                <div class="form-labels">
+                    <label for="value"><strong>Value</strong>    £</label>
 
-            <label for="source"><strong>Source</strong></label>
+                    <label for="source"><strong>Source</strong></label>
 
-            <div><strong>Frequency</strong></div>
+                    <div><strong>Frequency</strong></div>
 
-            <label for="startDate"><strong>Start date</strong></label>
+                    <label for="startDate"><strong>Start date</strong></label>
+                </div>
+                <div class="form-answers">
+                    <input type="text" id="value" name="value">
+
+                    <input type="text" id="source" name="source">
+                    
+                    <select id="frequency" name="frequency">
+                        <option value="One-off">One-off</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                    </select> 
+
+                    <input type="date" id="startDate" name="startDate" value=date>
+                </div>
+            </div>
+
+            <div class="submit">
+                <input type="submit" value="Add income">
+            </div>
         </div>
-        <div class="form-answers">
-            <input type="text" id="value" name="value">
-
-            <input type="text" id="source" name="source">
-            
-            <select id="frequency" name="frequency">
-                <option value="One-off">One-off</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-            </select> 
-
-            <input type="date" id="startDate" name="startDate" value=date>
-        </div>
-    </div>
-
-    <div class="submit">
-        <input type="submit" value="Add income">
-    </div>
-    </div>
 
     </form>
 {% endblock %}

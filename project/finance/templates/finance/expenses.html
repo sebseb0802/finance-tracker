@@ -9,10 +9,6 @@
     <link rel="stylesheet" href="{% static 'finance/expenses-style.css' %}">
 {% endblock %}
 
-{% block extra_js %}
-    <script src="{% static 'finance/expenses-script.js' %}"></script>
-{% endblock %}
-
 {% block saved-label %}Saved expenses:{% endblock %}
 
 {% block presence-check-and-list %}
@@ -40,63 +36,56 @@
 {% block enter-label %}Enter new expense:{% endblock %}
 
 {% block form %}
-    <form action="{% url 'finance:addExpense' %}" method="post">
+    <form action="{% url 'finance:addExpense' %}" method="post" class="form">
         {% csrf_token %}
-        <fieldset>
-            <label for="value">Value: £</label>
-            <input type="text" id="value" name="value"><br><br>
+        <div class="form-components">
+            <div class="form-labels-and-answers">
+                <div class="form-labels">
+                    <label for="value"><strong>Value</strong>    £</label>
 
-            <p>Category:</p>
-            <input type="radio" id="Entertainment" name="category" value="Entertainment">
-            <label for="Entertainment">Entertainment</label><br>
+                    <label for="source"><strong>Source</strong></label>
 
-            <input type="radio" id="Food and Drink" name="category" value="Food and Drink">
-            <label for="Food and Drink">Food and Drink</label><br>
+                    <label for="category"><strong>Category</strong></label>
 
-            <input type="radio" id="Travel" name="category" value="Travel">
-            <label for="Travel">Travel</label><br>
+                    <div><strong>Frequency</strong></div>
 
-            <input type="radio" id="Education" name="category" value="Education">
-            <label for="Education">Education</label><br>
+                    <label for="startDate"><strong>Start date</strong></label>
+                </div>
+                <div class="form-answers">
+                    <input type="text" id="value" name="value">
 
-            <input type="radio" id="Clothing" name="category" value="Clothing">
-            <label for="Clothing">Clothing</label><br>
+                    <input type="text" id="source" name="source">
+                    
+                    <select id="category" name="category">
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Eating out">Eating out</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Education">Education</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Housing">Housing</option>
+                        <option value="Debt">Debt</option>
+                        <option value="Gifts">Gifts</option>
+                    </select>
 
-            <input type="radio" id="Insurance" name="category" value="Insurance">
-            <label for="Insurance">Insurance</label><br>
+                    <select id="frequency" name="frequency">
+                        <option value="One-off">One-off</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                    </select> 
 
-            <input type="radio" id="Healthcare" name="category" value="Healthcare">
-            <label for="Healthcare">Healthcare</label><br>
+                    <input type="date" id="startDate" name="startDate" value=date>
+                </div>
+            </div>
 
-            <input type="radio" id="Housing" name="category" value="Housing">
-            <label for="Housing">Housing</label><br>
+            <div class="submit">
+                <input type="submit" value="Add expense">
+            </div>
+        </div>
 
-            <input type="radio" id="Debt" name="category" value="Debt">
-            <label for="Debt">Debt</label><br>
-
-            <input type="radio" id="Gifts" name="category" value="Gifts">
-            <label for="Gifts">Gifts</label><br><br>
-
-
-            <label for="source">Source: </label>
-            <input type="text" id="source" name="source"><br>
-
-
-            <p>Frequency:</p>
-            <input type="radio" id="one-off" name="frequency" value="One-off">
-            <label for="one-off">One-off</label><br>
-
-            <input type="radio" id="monthly" name="frequency" value="Monthly">
-            <label for="monthly">Monthly</label><br>
-
-            <input type="radio" id="yearly" name="frequency" value="Yearly">
-            <label for="yearly">Yearly</label><br><br>
-
-
-            <label for="startDate">Start date: </label>
-            <input type="date" id="startDate" name="startDate" value=date><br><br>
-
-            <input type="submit" value="Add expense">
-        </fieldset>
     </form>
 {% endblock %}
+
+{% block modal-message %}Expense{% endblock %}
