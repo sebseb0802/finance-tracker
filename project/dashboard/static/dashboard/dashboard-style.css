@@ -16,6 +16,8 @@
     justify-content: space-around;
     margin: 20px;
     background-color: #e5e7eb;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .option-card {
@@ -61,6 +63,10 @@
     background-color: #42b3ec;
 }
 
+.reports-card {
+    background-color: #e142ec;
+}
+
 #incomes-button {
     color: #3deb7a;
 }
@@ -71,4 +77,8 @@
 
 #budgets-button {
     color: #42b3ec;
+}
+
+#reports-button {
+    color: #e142ec;
 }

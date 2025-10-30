@@ -1,0 +1,10 @@
+{% extends "finance/finance-base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block header-title %}Reports{% endblock %}
+
+{% block finance_extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'finance/income-style.css' %}">
+{% endblock %}

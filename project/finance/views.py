@@ -169,3 +169,16 @@ def addBudget(request):
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully (previous budget with the same category and frequency was deleted).")
         else:
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully.")
+        
+def reports(request):
+    message = request.GET.get("message", "")
+    return render(
+        request, 
+        "finance/reports.html", 
+        {
+            "message": message
+        }
+    )
+
+def generateReport(request):
+    return HttpResponseRedirect(f"{reverse('finance:reports')}?message=Report generated successfully.")
