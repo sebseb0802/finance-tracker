@@ -13,7 +13,7 @@ def dashboard(request):
             if l[i].frequency == "Monthly" and timeframe == "Year":
                 # If the FinancialObject has a monthly frequency, and the specified timeframe for the summation is a year,
                 # then multiply the value of the FinancialObject by 12 to account for this
-                value_to_add = 12 * l[i].value
+                value_to_add = (12-l[i].startDate.month+1) * l[i].value
             else:
                 # Else, simply add the value of the FinancialObject
                 value_to_add = l[i].value

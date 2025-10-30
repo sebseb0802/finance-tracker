@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from datetime import datetime
 
 from .models import User, Income, Expense, Budget
 
@@ -70,6 +71,10 @@ def addExpense(request):
             }
         )
     else:
+        current_date = datetime.now()
+        current_year = current_date.year
+        current_month = current_date.month
+
         if Budget.objects.filter(category=input_category): 
             # If a budget of this category of expense exists, 
             # subtract the value of this expense from the values for remaining monthly and yearly spending of the budget
@@ -81,7 +86,7 @@ def addExpense(request):
             if input_frequency == "Monthly":
                 # If the frequency of the expense is monthly, then subtract 12-times the value of 
                 # the expense from the remaining value to be spent of the budget for the entire year
-                Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-(12 * int(input_value))))
+                Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-((12-current_month+1) * int(input_value))))
             else:
                 # Else, subtract only the value of the expense
                 Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-int(input_value)))
@@ -120,6 +125,10 @@ def addBudget(request):
             }
         )
     else:
+        current_date = datetime.now()
+        current_year = current_date.year
+        current_month = current_date.month
+
         deletedBudget = False
         
         if Budget.objects.filter(category=input_category):
@@ -143,15 +152,15 @@ def addBudget(request):
                 # Iterate through the list of expenses and subtract their respective values from 
                 # the values for remaining monthly and yearly spending of this budget
                 expenseValue = requiredExpenses[i].value
-                remainingValueMonth = Budget.objects.filter(category=input_category).get().remainingValueMonth - expenseValue
+                remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth - expenseValue
 
                 if requiredExpenses[i].frequency == "Monthly":
                     # If an expense has a monthly frequency, then subtract 12-times the value of the expense from the
                     # remaining value to be spent for the budget for this year
-                    remainingValueYear = Budget.objects.filter(category=input_category).get().remainingValueYear - (12 * expenseValue)
+                    remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear - ((12-current_month+1) * expenseValue)
                 else:
                     # Else, subtract only the value of the expense
-                    remainingValueYear = Budget.objects.filter(category=input_category).get().remainingValueYear - expenseValue
+                    remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear - expenseValue
 
                 Budget.objects.filter(category=input_category).update(remainingValueMonth=remainingValueMonth, remainingValueYear=remainingValueYear)
 
