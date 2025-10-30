@@ -37,7 +37,7 @@ def addIncome(request):
         # Create this income and save it to the database
         income = Income(user=User.objects.get(), value=input_value, source=input_source, frequency=input_frequency, startDate=input_startDate)
         income.save()
-
+            
         return HttpResponseRedirect(f"{reverse('finance:income')}?message=Income added successfully.")
         
 def expenses(request):
@@ -89,7 +89,7 @@ def addExpense(request):
         # Create this expense and save it to the database
         expense = Expense(user=User.objects.get(), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
         expense.save()
-
+            
         return HttpResponseRedirect(f"{reverse('finance:expenses')}?message=Expense added successfully.")
     
 def budgets(request):

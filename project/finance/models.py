@@ -32,9 +32,3 @@ class Budget(FinancialObject):
     category = models.CharField(default="Entertainment", max_length=200)
     remainingValueMonth = models.IntegerField(default=0)
     remainingValueYear = models.IntegerField(default=0)
-
-class MonthlyFinances(models.Model):
-    calendarMonth = models.CharField(default="January", max_length=200)
-    calendarYear = models.CharField(default="2025", max_length=200)
-    totalExpenses = models.IntegerField(default=0)
-    totalIncome = models.IntegerField(default=0)
