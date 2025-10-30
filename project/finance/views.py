@@ -1,9 +1,16 @@
-from django.shortcuts import render, get_list_or_404
+from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from datetime import datetime
 
-from .models import User, Income, Expense, Budget
+from django.db.models import Q
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from io import BytesIO
+from django.http import FileResponse
+from django.core.files.base import ContentFile
+
+from .models import User, Income, Expense, Budget, Report
 
 
 def income(request):
@@ -172,13 +179,104 @@ def addBudget(request):
         
 def reports(request):
     message = request.GET.get("message", "")
+    reports = Report.objects.all()
     return render(
         request, 
         "finance/reports.html", 
         {
+            "reports": reports,
             "message": message
         }
     )
 
 def generateReport(request):
-    return HttpResponseRedirect(f"{reverse('finance:reports')}?message=Report generated successfully.")
+    def sumFinancialObjectsFromList(l, timeframe="Month"):
+        sum = 0
+        for i in range(len(l)):
+            if l[i].frequency == "Monthly" and timeframe == "Year":
+                # If the FinancialObject has a monthly frequency, and the specified timeframe for the summation is a year,
+                # then multiply the value of the FinancialObject by 12 to account for this
+                value_to_add = (12-l[i].startDate.month+1) * l[i].value
+            else:
+                # Else, simply add the value of the FinancialObject
+                value_to_add = l[i].value
+            
+            sum += value_to_add
+
+        return sum
+
+    user = User.objects.get()
+
+    input_type = request.POST["type"]
+
+    budgets = Budget.objects.all()
+
+    if input_type == "Month":
+        current_datetime = datetime.now()
+        current_month = current_datetime.month
+
+        # Change current_month to its equivalent English-language string for use in displaying in the file
+        if current_month == 1:
+            current_month_name = "January"
+        elif current_month == 2:
+            current_month_name = "February"
+        elif current_month == 3:
+            current_month_name = "March"
+        elif current_month == 4:
+            current_month_name = "April"
+        elif current_month == 5:
+            current_month_name = "May"
+        elif current_month == 6:
+            current_month_name = "June"
+        elif current_month == 7:
+            current_month_name = "July"
+        elif current_month == 8:
+            current_month_name = "August"
+        elif current_month == 9:
+            current_month_name = "September"
+        elif current_month == 10:
+            current_month_name = "October"
+        elif current_month == 11:
+            current_month_name = "November"
+        else:
+            current_month_name = "December"      
+        
+        # Create lists of relevant Income objects for the current month by filtering with Q()
+        current_month_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))))
+
+        # Create lists of relevant Expense objects for the current month by filtering with Q()
+        current_month_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))))
+
+        # Sum all income for the current month
+        current_month_income_total = sumFinancialObjectsFromList(current_month_income)
+
+        # Sum all expenses for the current month
+        current_month_expenses_total = sumFinancialObjectsFromList(current_month_expenses)
+
+        # Calculate net income for both the current month and the current year
+        current_month_net_income = current_month_income_total - current_month_expenses_total
+
+        report_text = render_to_string('finance/report-template.html', {
+            'user': user,
+            'current_month_name': current_month_name,
+            'current_month_income_total': current_month_income_total,
+            'current_month_expenses_total': current_month_expenses_total,
+            'current_month_net_income': current_month_net_income,
+            'income': current_month_income,
+            'expenses': current_month_expenses,
+            'budgets': budgets
+        })
+        pdf_bytes = HTML(string=report_text).write_pdf()
+        type = "Month"
+    else:
+        pass
+
+    report = Report(user=user, type=type)
+    report.file.save(f'{current_datetime}_report.pdf', ContentFile(pdf_bytes))
+    report.save()
+
+    return FileResponse(BytesIO(pdf_bytes), filename=f'{current_datetime}_report.pdf', as_attachment=True)
+
+def downloadPastReport(request, report_id):
+    report = get_object_or_404(Report, id=report_id)
+    return FileResponse(report.file, as_attachment=True, filename=f'{report.creationDate}_report.pdf')

@@ -4,14 +4,18 @@
 
 {% block header-title %}Reports{% endblock %}
 
+{% block finance_extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'finance/reports-style.css' %}">
+{% endblock %}
+
 {% block saved-label %}Past reports:{% endblock %}
 
 {% block presence-check-and-list %}
     {% if reports %}
         {% for i in reports %}
-            <li class="report">
-                <div class="report-link">                         
-                </div>
+            <li id="past-report">
+               <a href="{% url 'finance:downloadPastReport' i.id %}">Report on {{ i.creationDate }}</a> 
             </li>
         {% endfor %}
     {% else %}
@@ -20,3 +24,26 @@
 {% endblock %}
 
 {% block enter-label %}Generate report:{% endblock %}
+{% block form %}
+    <form action="{% url 'finance:generateReport' %}" method="post" class="form">
+        {% csrf_token %}
+        <div class="form-components">
+            <div class="form-labels-and-answers">
+                <div class="form-labels">
+                    <div><strong>Type</strong></div>
+                </div>
+                <div class="form-answers">
+                    <select id="type" name="type">
+                        <option value="Month">Current month</option>
+                        <option value="Year">Current year</option>
+                    </select> 
+                </div>
+            </div>
+
+            <div class="submit">
+                <input type="submit" value="Generate report">
+            </div>
+        </div>
+
+    </form>
+{% endblock %}

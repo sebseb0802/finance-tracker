@@ -1,0 +1,35 @@
+<h1>Financial report for {{ user.user_username }} for the month of {{ current_month_name }}</h1>
+
+<h2>Overview</h2>
+<ul>
+    <li>Total income: £{{ current_month_income_total }}</li>
+    <li>Total expenses: £{{ current_month_expenses_total }}</li>
+    <li>Net income: £{{ current_month_net_income }}</li>
+</ul>
+
+<h2>Income</h2>
+<ul>
+    {% for i in income %}
+        <li>{{ i.source }}: £{{ i.value}} ({{ i.frequency }})</li>
+    {% empty %}
+        <li>(None)</li>
+    {% endfor %}
+</ul>
+
+<h2>Expenses</h2>
+<ul>
+    {% for i in expenses %}
+        <li>{{ i.category }} - {{ i.source }}: £{{ i.value}} ({{ i.frequency }})</li>
+    {% empty %}
+        <li>(None)</li>
+    {% endfor %}
+</ul>
+
+<h2>Budgets</h2>
+<ul>
+    {% for i in budgets %}
+        <li>{{ i.category }}: £{{ i.value}} - unspent this month: £{{ i.remainingValueMonth }}</li>
+    {% empty %}
+        <li>(None)</li>
+    {% endfor %}
+</ul>
