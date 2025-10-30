@@ -4,7 +4,19 @@
 
 {% block header-title %}Reports{% endblock %}
 
-{% block finance_extra_css %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'finance/income-style.css' %}">
+{% block saved-label %}Past reports:{% endblock %}
+
+{% block presence-check-and-list %}
+    {% if reports %}
+        {% for i in reports %}
+            <li class="report">
+                <div class="report-link">                         
+                </div>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li>No reports generated yet.</li>
+    {% endif %}
 {% endblock %}
+
+{% block enter-label %}Generate report:{% endblock %}
