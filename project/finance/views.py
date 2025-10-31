@@ -12,10 +12,25 @@ from django.core.files.base import ContentFile
 
 from .models import User, Income, Expense, Budget, Report
 
+# Performs a bubble sort of a given list of financial objects to sort them in ascending order by date of occurrence (startDate)
+# Bubble sort is used because it has a better best-case time complexity than selection sort
+def sortFinancialObjectsByAscendingDate(l):
+    swaps = 1
+    while swaps > 0:
+        swaps = 0
+        for i in range(len(l)-1):
+            if l[i].startDate > l[i+1].startDate:
+                temp = l[i]
+                l[i] = l[i+1]
+                l[i+1] = temp
+                swaps = swaps + 1
+
+    return l
+
 
 def income(request):
     message = request.GET.get("message", "")
-    income = Income.objects.all()
+    income = sortFinancialObjectsByAscendingDate(list(Income.objects.all()))
     return render(
         request, 
         "finance/income.html", 
@@ -50,7 +65,7 @@ def addIncome(request):
         
 def expenses(request):
     message = request.GET.get("message", "")
-    expenses = Expense.objects.all()
+    expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.all()))
     return render(
         request, 
         "finance/expenses.html", 
@@ -244,11 +259,11 @@ def generateReport(request):
         
         # Create lists of relevant Income objects for the current month by filtering with Q(), and then putting them in
         # ascending order by date of occurrence for display in the report
-        current_month_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))).order_by("startDate"))
+        current_month_income = sortFinancialObjectsByAscendingDate(list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))))))
 
         # Create lists of relevant Expense objects for the current month by filtering with Q(), and then putting them in
         # ascending order by date of occurrence for display in the report
-        current_month_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))).order_by("startDate"))
+        current_month_expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))))))
 
         # Sum all income for the current month
         current_month_income_total = sumFinancialObjectsFromList(current_month_income)
@@ -269,7 +284,7 @@ def generateReport(request):
             'expenses': current_month_expenses,
             'budgets': budgets
         })
-        pdf_bytes = HTML(string=report_text).write_pdf()
+
         reportType = "Month"
     else:
         current_year = current_datetime.year
@@ -302,13 +317,19 @@ def generateReport(request):
             'budgets': budgets
         })
 
-        pdf_bytes = HTML(string=report_text).write_pdf()
         reportType = "Year"
 
+    # Returns the PDF content as raw bytes and assigns that to pdf_bytes
+    pdf_bytes = HTML(string=report_text).write_pdf()
+
     report = Report(user=user, reportType=reportType)
+
+    # Creates and saves the report PDF file using the saved bytes from above
     report.file.save(f'{current_datetime}_report.pdf', ContentFile(pdf_bytes))
+
     report.save()
 
+    # Report file is downloaded once "Generate report" button is pressed
     return FileResponse(BytesIO(pdf_bytes), filename=f'{current_datetime}_{reportType}_report.pdf', as_attachment=True)
 
 def downloadPastReport(request, report_id):
