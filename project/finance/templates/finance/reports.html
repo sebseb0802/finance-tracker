@@ -15,7 +15,7 @@
     {% if reports %}
         {% for i in reports %}
             <li id="past-report">
-               <a href="{% url 'finance:downloadPastReport' i.id %}">Report on {{ i.creationDate }}</a> 
+               <a href="{% url 'finance:downloadPastReport' i.id %}">Report on {{ i.creationDate }} (Type: {{ i.reportType }})</a> 
             </li>
         {% endfor %}
     {% else %}

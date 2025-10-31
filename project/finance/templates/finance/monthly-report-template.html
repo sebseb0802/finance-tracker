@@ -28,7 +28,11 @@
 <h2>Budgets</h2>
 <ul>
     {% for i in budgets %}
-        <li>{{ i.category }}: £{{ i.value}} - unspent this month: £{{ i.remainingValueMonth }}</li>
+        {% if i.remainingValueMonth > 0 %}
+            <li>{{ i.category }}: £{{ i.value}} - amount to spend: £{{ i.remainingValueYear }}</li>
+        {% else %}
+            <li>{{ i.category }}: £{{ i.value}} - Warning: over-budget by £{{ -(i.remainingValueMonth) }}</li>
+        {% endif %}
     {% empty %}
         <li>(None)</li>
     {% endfor %}

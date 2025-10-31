@@ -211,8 +211,9 @@ def generateReport(request):
 
     budgets = Budget.objects.all()
 
+    current_datetime = datetime.now()
+
     if input_type == "Month":
-        current_datetime = datetime.now()
         current_month = current_datetime.month
 
         # Change current_month to its equivalent English-language string for use in displaying in the file
@@ -253,10 +254,10 @@ def generateReport(request):
         # Sum all expenses for the current month
         current_month_expenses_total = sumFinancialObjectsFromList(current_month_expenses)
 
-        # Calculate net income for both the current month and the current year
+        # Calculate net income for the current month
         current_month_net_income = current_month_income_total - current_month_expenses_total
 
-        report_text = render_to_string('finance/report-template.html', {
+        report_text = render_to_string('finance/monthly-report-template.html', {
             'user': user,
             'current_month_name': current_month_name,
             'current_month_income_total': current_month_income_total,
@@ -267,16 +268,45 @@ def generateReport(request):
             'budgets': budgets
         })
         pdf_bytes = HTML(string=report_text).write_pdf()
-        type = "Month"
+        reportType = "Month"
     else:
-        pass
+        current_year = current_datetime.year
+        
+        # Create lists of relevant Income objects for the current year by filtering with Q()
+        current_year_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")))
 
-    report = Report(user=user, type=type)
+        # Create lists of relevant Expense objects for the current year by filtering with Q()
+        current_year_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")))
+
+        # Sum all income for the current year
+        current_year_income_total = sumFinancialObjectsFromList(current_year_income, "Year")
+
+        # Sum all expenses for the current year
+        current_year_expenses_total = sumFinancialObjectsFromList(current_year_expenses, "Year")
+
+        # Calculate net income for the current year
+        current_year_net_income = current_year_income_total - current_year_expenses_total
+
+        report_text = render_to_string('finance/yearly-report-template.html', {
+            'user': user,
+            'current_year': current_year,
+            'current_year_income_total': current_year_income_total,
+            'current_year_expenses_total': current_year_expenses_total,
+            'current_year_net_income': current_year_net_income,
+            'income': current_year_income,
+            'expenses': current_year_expenses,
+            'budgets': budgets
+        })
+
+        pdf_bytes = HTML(string=report_text).write_pdf()
+        reportType = "Year"
+
+    report = Report(user=user, reportType=reportType)
     report.file.save(f'{current_datetime}_report.pdf', ContentFile(pdf_bytes))
     report.save()
 
-    return FileResponse(BytesIO(pdf_bytes), filename=f'{current_datetime}_report.pdf', as_attachment=True)
+    return FileResponse(BytesIO(pdf_bytes), filename=f'{current_datetime}_{reportType}_report.pdf', as_attachment=True)
 
 def downloadPastReport(request, report_id):
     report = get_object_or_404(Report, id=report_id)
-    return FileResponse(report.file, as_attachment=True, filename=f'{report.creationDate}_report.pdf')
+    return FileResponse(report.file, as_attachment=True, filename=f'{report.creationDate}_{report.reportType}_report.pdf')
