@@ -242,11 +242,13 @@ def generateReport(request):
         else:
             current_month_name = "December"      
         
-        # Create lists of relevant Income objects for the current month by filtering with Q()
-        current_month_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))))
+        # Create lists of relevant Income objects for the current month by filtering with Q(), and then putting them in
+        # ascending order by date of occurrence for display in the report
+        current_month_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))).order_by("startDate"))
 
-        # Create lists of relevant Expense objects for the current month by filtering with Q()
-        current_month_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))))
+        # Create lists of relevant Expense objects for the current month by filtering with Q(), and then putting them in
+        # ascending order by date of occurrence for display in the report
+        current_month_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))).order_by("startDate"))
 
         # Sum all income for the current month
         current_month_income_total = sumFinancialObjectsFromList(current_month_income)
@@ -272,11 +274,13 @@ def generateReport(request):
     else:
         current_year = current_datetime.year
         
-        # Create lists of relevant Income objects for the current year by filtering with Q()
-        current_year_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")))
+        # Create lists of relevant Income objects for the current year by filtering with Q(), and then putting them into
+        # ascending order by date of occurrence for display in the report
+        current_year_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")).order_by("startDate"))
 
-        # Create lists of relevant Expense objects for the current year by filtering with Q()
-        current_year_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")))
+        # Create lists of relevant Expense objects for the current year by filtering with Q(), and then putting them into
+        # ascending order by date of occurrence for display in the report
+        current_year_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")).order_by("startDate"))
 
         # Sum all income for the current year
         current_year_income_total = sumFinancialObjectsFromList(current_year_income, "Year")

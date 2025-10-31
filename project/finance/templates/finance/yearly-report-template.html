@@ -1,3 +1,5 @@
+{% load finance_extras %}
+
 <h1>Financial report for {{ user.user_username }} for the year of {{ current_year }}</h1>
 
 <h2>Overview</h2>
@@ -29,9 +31,9 @@
 <ul>
     {% for i in budgets %}
         {% if i.remainingValueYear > 0 %}
-            <li>{{ i.category }}: £{{ i.value}} - amount to spend: £{{ i.remainingValueYear }}</li>
+            <li>{{ i.category }}: £{{ i.yearlyValue }} - amount left to spend: £{{ i.remainingValueYear }}</li>
         {% else %}
-            <li>{{ i.category }}: £{{ i.value}} - Warning: over-budget by £{{ -(i.remainingValueYear) }}</li>
+            <li>{{ i.category }}: £{{ i.yearlyValue }} - Warning: over-budget by £{{ i.remainingValueYear|absoluteValue }}</li>
         {% endif %}
     {% empty %}
         <li>(None)</li>

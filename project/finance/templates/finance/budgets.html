@@ -1,5 +1,7 @@
 {% extends "finance/finance-base.html" %}
 
+{% load finance_extras %}
+
 {% block title %}Budgets{% endblock %}
 
 {% block header-title %}Budgets{% endblock %}
@@ -21,9 +23,22 @@
                 <div class="card-info">
                     <div><strong>Category</strong></div><div>{{ i.category }}</div>
                     <div><strong>Maximum spending for 1 month</strong></div><div>£{{ i.value }}</div> 
-                    <div><strong>Maximum spending for 1 year</strong></div><div>£{{ i.yearlyValue }}</div> 
-                    <div><strong>Remaining spending for the month</strong></div><div>£{{ i.remainingValueMonth }}</div>
-                    <div><strong>Remaining spending for the year</strong></div><div>£{{ i.remainingValueYear }}</div>
+                    <div><strong>Maximum spending for 1 year</strong></div><div>£{{ i.yearlyValue }}</div>
+
+                    <div><strong>Remaining spending for the month</strong></div>
+                    {% if i.remainingValueMonth > 0 %} 
+                        <div>£{{ i.remainingValueMonth }}</div>
+                    {% else %}
+                        <div><strong>Warning</strong> - over-budget by £{{ i.remainingValueMonth|absoluteValue }}</div>
+                    {% endif %}
+                    
+                    <div><strong>Remaining spending for the year</strong></div>
+                    {% if i.remainingValueYear > 0 %}
+                        <div>£{{ i.remainingValueYear }}</div>
+                    {% else %}
+                        <div><strong>Warning</strong> - over-budget by £{{ i.remainingValueYear|absoluteValue }}</div>
+                    {% endif %}
+
                     <div><strong>Start date</strong></div><div>{{ i.startDate }}</div>
                     <div><strong>Date added</strong></div><div>{{ i.addDate }}</div>                           
                 </div>
