@@ -133,3 +133,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = '/authentication/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/authentication/login'
+
+AUTH_USER_MODEL = "finance.User"

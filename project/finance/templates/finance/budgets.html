@@ -26,14 +26,14 @@
                     <div><strong>Maximum spending for 1 year</strong></div><div>£{{ i.yearlyValue }}</div>
 
                     <div><strong>Remaining spending for the month</strong></div>
-                    {% if i.remainingValueMonth > 0 %} 
+                    {% if i.remainingValueMonth >= 0 %} 
                         <div>£{{ i.remainingValueMonth }}</div>
                     {% else %}
                         <div><strong>Warning</strong> - over-budget by £{{ i.remainingValueMonth|absoluteValue }}</div>
                     {% endif %}
                     
                     <div><strong>Remaining spending for the year</strong></div>
-                    {% if i.remainingValueYear > 0 %}
+                    {% if i.remainingValueYear >= 0 %}
                         <div>£{{ i.remainingValueYear }}</div>
                     {% else %}
                         <div><strong>Warning</strong> - over-budget by £{{ i.remainingValueYear|absoluteValue }}</div>
@@ -52,44 +52,46 @@
 {% block enter-label %}Enter new budget:{% endblock %}
 
 {% block form %}
-    <form action="{% url 'finance:addBudget' %}" method="post" class="form">
-        {% csrf_token %}
-        <div class="form-components">
-            <div class="form-labels-and-answers">
-                <div class="form-labels">
-                    <label for="value"><strong>Maximum spending for 1 month</strong>    £</label>
+    {% if user.is_primary_user %}
+        <form action="{% url 'finance:addBudget' %}" method="post" class="form">
+            {% csrf_token %}
+            <div class="form-components">
+                <div class="form-labels-and-answers">
+                    <div class="form-labels">
+                        <label for="value"><strong>Maximum spending for 1 month</strong>    £</label>
 
-                    <label for="category"><strong>Category</strong></label>
+                        <label for="category"><strong>Category</strong></label>
 
-                    <label for="startDate"><strong>Start date</strong></label>
+                        <label for="startDate"><strong>Start date</strong></label>
+                    </div>
+                    <div class="form-answers">
+                        <input type="text" id="value" name="value">
+                        
+                        <select id="category" name="category">
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Eating out">Eating out</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Education">Education</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Debt">Debt</option>
+                            <option value="Gifts">Gifts</option>
+                        </select>
+
+                        <input type="date" id="startDate" name="startDate" value=date>
+                    </div>
                 </div>
-                <div class="form-answers">
-                    <input type="text" id="value" name="value">
-                    
-                    <select id="category" name="category">
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Eating out">Eating out</option>
-                        <option value="Groceries">Groceries</option>
-                        <option value="Travel">Travel</option>
-                        <option value="Education">Education</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Insurance">Insurance</option>
-                        <option value="Healthcare">Healthcare</option>
-                        <option value="Housing">Housing</option>
-                        <option value="Debt">Debt</option>
-                        <option value="Gifts">Gifts</option>
-                    </select>
 
-                    <input type="date" id="startDate" name="startDate" value=date>
+                <div class="submit">
+                    <input type="submit" value="Add budget">
                 </div>
             </div>
 
-            <div class="submit">
-                <input type="submit" value="Add budget">
-            </div>
-        </div>
-
-    </form>
+        </form>
+    {% else %}
+            <p>Only primary users can perform this action.</p>
+    {% endif %}
 {% endblock %}
-
-{% block modal-message %}Budget{% endblock %}

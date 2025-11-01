@@ -1,13 +1,8 @@
-{% extends "finance/finance-base.html" %}
+{% extends "dashboard/navbar-and-sidebar-base.html" %}
 
 {% block title %}Log in{% endblock %}
 
 {% block header %}Log in{% endblock %}
-
-{% block extra_css %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'authentiction/login-style.css' %}">
-{% endblock %}
 
 {% block extra_js %}
     <script>
@@ -19,9 +14,14 @@
     </script>
 {% endblock %}
 
+{% block extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'authentication/login-style.css' %}">
+{% endblock %}
+
 {% block content %}
     <h1>Log in</h1>
-    <form method="post" action="{% url 'authentication:loginProcess' %}">
+    <form method="post" action="{% url 'authentication:login' %}">
         {% csrf_token %}
         <label>Username
             <input type="text" name="username" required autofocus>

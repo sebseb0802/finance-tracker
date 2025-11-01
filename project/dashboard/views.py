@@ -24,18 +24,18 @@ def dashboard(request):
 
         return sum
     
-    user = User.objects.get()
+    user = request.user
 
     current_date = datetime.now()
     current_year = current_date.year
     current_month = current_date.month
     
     # Create lists of relevant Income objects for the current month/year by filtering with Q()
-    current_month_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))))
+    current_month_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))) | (Q(frequency="Yearly") & Q(startDate__month=str(current_month)))))
     current_year_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")))
 
     # Create lists of relevant Expense objects for the current month/year by filtering with Q()
-    current_month_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month)))))
+    current_month_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))) | (Q(frequency="Yearly") & Q(startDate__month=str(current_month)))))
     current_year_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")))
 
 

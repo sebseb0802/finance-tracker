@@ -30,7 +30,7 @@
 <h2>Budgets</h2>
 <ul>
     {% for i in budgets %}
-        {% if i.remainingValueYear > 0 %}
+        {% if i.remainingValueYear >= 0 %}
             <li>{{ i.category }}: £{{ i.yearlyValue }} - amount left to spend: £{{ i.remainingValueYear }}</li>
         {% else %}
             <li>{{ i.category }}: £{{ i.yearlyValue }} - Warning: over-budget by £{{ i.remainingValueYear|absoluteValue }}</li>

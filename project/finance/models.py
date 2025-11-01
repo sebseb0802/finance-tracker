@@ -1,15 +1,14 @@
 from django.db import models
 import datetime
+from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
-class User(models.Model):
-    username = models.CharField(default="username", max_length=200)
-    password = models.CharField(default="password", max_length=200)
+class User(AbstractUser):
     is_primary_user = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user_username
+        return self.username
     
 class FinancialObject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # A single user can have many instances of income/expenses/budgets

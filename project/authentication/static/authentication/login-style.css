@@ -1,4 +1,8 @@
-form {
+.form-group, .error-messages, form {
     display: flex;
     flex-direction: column;
+}
+
+button {
+    width: 200px;
 }

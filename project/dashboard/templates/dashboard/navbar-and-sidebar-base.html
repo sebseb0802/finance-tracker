@@ -59,7 +59,10 @@
         <ul class="header-right-side">
             {% if request.user.is_authenticated %}
                 <p>Logged in as {{ request.user.username }}</p>
-                <a href="{% url 'authentication:logout' %}">Log out</a>
+                <form method="POST" action="{% url 'authentication:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Log out</a>
+                </form>
             {% else %}
                 <a href="{% url 'authentication:login' %}">Log in</a>
             {% endif %}

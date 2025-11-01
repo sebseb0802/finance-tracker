@@ -36,56 +36,58 @@
 {% block enter-label %}Enter new expense:{% endblock %}
 
 {% block form %}
-    <form action="{% url 'finance:addExpense' %}" method="post" class="form">
-        {% csrf_token %}
-        <div class="form-components">
-            <div class="form-labels-and-answers">
-                <div class="form-labels">
-                    <label for="value"><strong>Value</strong>    £</label>
+    {% if request.user.is_primary_user %}
+        <form action="{% url 'finance:addExpense' %}" method="post" class="form">
+            {% csrf_token %}
+            <div class="form-components">
+                <div class="form-labels-and-answers">
+                    <div class="form-labels">
+                        <label for="value"><strong>Value</strong>    £</label>
 
-                    <label for="source"><strong>Source</strong></label>
+                        <label for="source"><strong>Source</strong></label>
 
-                    <label for="category"><strong>Category</strong></label>
+                        <label for="category"><strong>Category</strong></label>
 
-                    <div><strong>Frequency</strong></div>
+                        <div><strong>Frequency</strong></div>
 
-                    <label for="startDate"><strong>Start date</strong></label>
+                        <label for="startDate"><strong>Start date</strong></label>
+                    </div>
+                    <div class="form-answers">
+                        <input type="text" id="value" name="value">
+
+                        <input type="text" id="source" name="source">
+                        
+                        <select id="category" name="category">
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Eating out">Eating out</option>
+                            <option value="Groceries">Groceries</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Education">Education</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Debt">Debt</option>
+                            <option value="Gifts">Gifts</option>
+                        </select>
+
+                        <select id="frequency" name="frequency">
+                            <option value="One-off">One-off</option>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Yearly">Yearly</option>
+                        </select> 
+
+                        <input type="date" id="startDate" name="startDate" value=date>
+                    </div>
                 </div>
-                <div class="form-answers">
-                    <input type="text" id="value" name="value">
 
-                    <input type="text" id="source" name="source">
-                    
-                    <select id="category" name="category">
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Eating out">Eating out</option>
-                        <option value="Groceries">Groceries</option>
-                        <option value="Travel">Travel</option>
-                        <option value="Education">Education</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Insurance">Insurance</option>
-                        <option value="Healthcare">Healthcare</option>
-                        <option value="Housing">Housing</option>
-                        <option value="Debt">Debt</option>
-                        <option value="Gifts">Gifts</option>
-                    </select>
-
-                    <select id="frequency" name="frequency">
-                        <option value="One-off">One-off</option>
-                        <option value="Monthly">Monthly</option>
-                        <option value="Yearly">Yearly</option>
-                    </select> 
-
-                    <input type="date" id="startDate" name="startDate" value=date>
+                <div class="submit">
+                    <input type="submit" value="Add expense">
                 </div>
             </div>
 
-            <div class="submit">
-                <input type="submit" value="Add expense">
-            </div>
-        </div>
-
-    </form>
+        </form>
+    {% else %}
+            <p>Only primary users can perform this action.</p>
+    {% endif %}
 {% endblock %}
-
-{% block modal-message %}Expense{% endblock %}

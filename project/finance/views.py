@@ -10,7 +10,11 @@ from io import BytesIO
 from django.http import FileResponse
 from django.core.files.base import ContentFile
 
+from django.contrib.auth.decorators import login_required
+
 from .models import User, Income, Expense, Budget, Report
+
+from .decorators import primary_user_required
 
 # Performs a bubble sort of a given list of financial objects to sort them in ascending order by date of occurrence (startDate)
 # Bubble sort is used because it has a better best-case time complexity than selection sort
@@ -27,6 +31,7 @@ def sortFinancialObjectsByAscendingDate(l):
 
     return l
 
+@login_required
 def income(request):
     message = request.GET.get("message", "")
     income = sortFinancialObjectsByAscendingDate(list(Income.objects.all()))
@@ -39,6 +44,8 @@ def income(request):
         }
     )
 
+@login_required
+@primary_user_required
 def addIncome(request):
     try:
         input_value = int(request.POST["value"])
@@ -57,11 +64,12 @@ def addIncome(request):
         )
     else:
         # Create this income and save it to the database
-        income = Income(user=User.objects.get(), value=input_value, source=input_source, frequency=input_frequency, startDate=input_startDate)
+        income = Income(user=User.objects.get(is_primary_user=True), value=input_value, source=input_source, frequency=input_frequency, startDate=input_startDate)
         income.save()
             
         return HttpResponseRedirect(f"{reverse('finance:income')}?message=Income added successfully.")
-        
+
+@login_required
 def expenses(request):
     message = request.GET.get("message", "")
     expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.all()))
@@ -74,6 +82,8 @@ def expenses(request):
         }
     )
 
+@login_required
+@primary_user_required
 def addExpense(request):
     try:
         input_category = request.POST["category"]
@@ -96,13 +106,16 @@ def addExpense(request):
         current_year = current_date.year
         current_month = current_date.month
 
+        input_startDate_parsed = datetime.strptime(input_startDate, "%Y-%m-%d")
+
         if Budget.objects.filter(category=input_category): 
             # If a budget of this category of expense exists, 
             # subtract the value of this expense from the values for remaining monthly and yearly spending of the budget
             remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
             remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
 
-            Budget.objects.filter(category=input_category).update(remainingValueMonth=(remainingValueMonth-int(input_value)))
+            if input_startDate_parsed.month == current_month:
+                Budget.objects.filter(category=input_category).update(remainingValueMonth=(remainingValueMonth-int(input_value)))
 
             if input_frequency == "Monthly":
                 # If the frequency of the expense is monthly, then subtract 12-times the value of 
@@ -113,11 +126,12 @@ def addExpense(request):
                 Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-int(input_value)))
         
         # Create this expense and save it to the database
-        expense = Expense(user=User.objects.get(), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
+        expense = Expense(user=User.objects.get(is_primary_user=True), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
         expense.save()
             
         return HttpResponseRedirect(f"{reverse('finance:expenses')}?message=Expense added successfully.")
-    
+
+@login_required
 def budgets(request):
     message = request.GET.get("message", "")
     budgets = Budget.objects.all()
@@ -130,6 +144,8 @@ def budgets(request):
         }
     )
 
+@login_required
+@primary_user_required
 def addBudget(request):
     try:
         input_category = request.POST["category"]
@@ -161,7 +177,7 @@ def addBudget(request):
         yearlyValue = 12 * input_value # yearlyValue is 12-times the monthly (input) value
         
         # Create this budget and save it to the database
-        budget = Budget(user=User.objects.get(), category=input_category, value=input_value, remainingValueMonth=input_value, startDate=input_startDate, yearlyValue=yearlyValue, remainingValueYear=yearlyValue)
+        budget = Budget(user=User.objects.get(is_primary_user=True), category=input_category, value=input_value, remainingValueMonth=input_value, startDate=input_startDate, yearlyValue=yearlyValue, remainingValueYear=yearlyValue)
         budget.save()
 
         if Expense.objects.filter(category=input_category):
@@ -172,16 +188,21 @@ def addBudget(request):
             for i in range(len(requiredExpenses)):
                 # Iterate through the list of expenses and subtract their respective values from 
                 # the values for remaining monthly and yearly spending of this budget
+
                 expenseValue = requiredExpenses[i].value
-                remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth - expenseValue
+                remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
+                remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
+
+                if requiredExpenses[i].startDate.month == current_month:
+                    remainingValueMonth -= expenseValue
 
                 if requiredExpenses[i].frequency == "Monthly":
                     # If an expense has a monthly frequency, then subtract 12-times the value of the expense from the
                     # remaining value to be spent for the budget for this year
-                    remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear - ((12-current_month+1) * expenseValue)
+                    remainingValueYear -= ((12-current_month+1) * expenseValue)
                 else:
                     # Else, subtract only the value of the expense
-                    remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear - expenseValue
+                    remainingValueYear -= expenseValue
 
                 Budget.objects.filter(category=input_category).update(remainingValueMonth=remainingValueMonth, remainingValueYear=remainingValueYear)
 
@@ -190,7 +211,8 @@ def addBudget(request):
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully (previous budget with the same category and frequency was deleted).")
         else:
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully.")
-        
+
+@login_required
 def reports(request):
     message = request.GET.get("message", "")
     reports = Report.objects.all()
@@ -219,7 +241,7 @@ def generateReport(request):
 
         return sum
 
-    user = User.objects.get()
+    user = User.objects.get(is_primary_user=True)
 
     input_type = request.POST["type"]
 
@@ -258,11 +280,11 @@ def generateReport(request):
         
         # Create lists of relevant Income objects for the current month by filtering with Q(), and then putting them in
         # ascending order by date of occurrence for display in the report
-        current_month_income = sortFinancialObjectsByAscendingDate(list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))))))
+        current_month_income = sortFinancialObjectsByAscendingDate(list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))) | (Q(frequency="Yearly") & Q(startDate__month=str(current_month))))))
 
         # Create lists of relevant Expense objects for the current month by filtering with Q(), and then putting them in
         # ascending order by date of occurrence for display in the report
-        current_month_expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))))))
+        current_month_expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__month=str(current_month))) | (Q(frequency="Yearly") & Q(startDate__month=str(current_month))))))
 
         # Sum all income for the current month
         current_month_income_total = sumFinancialObjectsFromList(current_month_income)
@@ -290,11 +312,11 @@ def generateReport(request):
         
         # Create lists of relevant Income objects for the current year by filtering with Q(), and then putting them into
         # ascending order by date of occurrence for display in the report
-        current_year_income = list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")).order_by("startDate"))
+        current_year_income = sortFinancialObjectsByAscendingDate(list(Income.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly"))))
 
         # Create lists of relevant Expense objects for the current year by filtering with Q(), and then putting them into
         # ascending order by date of occurrence for display in the report
-        current_year_expenses = list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly")).order_by("startDate"))
+        current_year_expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.filter(Q(frequency="Monthly") | (Q(frequency="One-off") & Q(startDate__year=str(current_year))) | Q(frequency="Yearly"))))
 
         # Sum all income for the current year
         current_year_income_total = sumFinancialObjectsFromList(current_year_income, "Year")
