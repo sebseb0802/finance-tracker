@@ -9,23 +9,23 @@
 
 {% block extra_js %}
     <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById("incomes-button").onclick = function() {
-                    window.location.href = "{% url 'finance:income' %}";
-                };
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("incomes-button").onclick = function() {
+                window.location.href = "{% url 'finance:income' %}";
+            };
 
-                document.getElementById("expenses-button").onclick = function() {
-                    window.location.href = "{% url 'finance:expenses' %}";
-                };
+            document.getElementById("expenses-button").onclick = function() {
+                window.location.href = "{% url 'finance:expenses' %}";
+            };
 
-                document.getElementById("budgets-button").onclick = function() {
-                    window.location.href = "{% url 'finance:budgets' %}";
-                };
+            document.getElementById("budgets-button").onclick = function() {
+                window.location.href = "{% url 'finance:budgets' %}";
+            };
 
-                document.getElementById("reports-button").onclick = function() {
-                    window.location.href = "{% url 'finance:reports' %}";
-                };
-            });
+            document.getElementById("reports-button").onclick = function() {
+                window.location.href = "{% url 'finance:reports' %}";
+            };
+        });
     </script>
 {% endblock %}
 

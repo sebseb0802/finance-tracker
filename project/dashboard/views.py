@@ -2,9 +2,11 @@ from django.shortcuts import render
 from finance.models import User, Income, Expense
 from django.db.models import Q
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+@login_required
 def dashboard(request):
     # Avoid repetition of summation of FinancialObjects below (4 times) through the use of the following function
     def sumFinancialObjectsFromList(l, timeframe="Month"):

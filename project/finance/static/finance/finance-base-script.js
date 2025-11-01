@@ -13,4 +13,11 @@ document.addEventListener("DOMContentLoaded", function() {
     if (message) {
         showSuccessToast(message);
     }
+
+    document.querySelectorAll(".card").forEach(function (card) {
+        card.addEventListener("click", function() {
+            var edit_card = document.getElementById("edit-card");
+            edit_card.className = "edit-card show";
+        });
+    });
 });

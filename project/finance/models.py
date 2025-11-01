@@ -4,7 +4,9 @@ import datetime
 
 # Create your models here.
 class User(models.Model):
-    user_username = models.CharField(max_length=200)
+    username = models.CharField(default="username", max_length=200)
+    password = models.CharField(default="password", max_length=200)
+    is_primary_user = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user_username

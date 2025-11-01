@@ -40,6 +40,15 @@
         <div id="success-toast-text"></div>
     </div>
 
+    <div class="edit-card" id="edit-card">
+        <h3>Edit card</h3>
+        <div class="edit-card-form">
+            {% block edit-card-form %}
+            {% endblock %}
+        </div>
+
+    </div>
+
     {% block form %}
     {% endblock %}
 {% endblock %}

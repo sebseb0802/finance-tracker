@@ -27,7 +27,6 @@ def sortFinancialObjectsByAscendingDate(l):
 
     return l
 
-
 def income(request):
     message = request.GET.get("message", "")
     income = sortFinancialObjectsByAscendingDate(list(Income.objects.all()))

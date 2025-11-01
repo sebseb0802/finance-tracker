@@ -1,0 +1,38 @@
+{% extends "finance/finance-base.html" %}
+
+{% block title %}Create account{% endblock %}
+
+{% block header %}Create account{% endblock %}
+
+{% block extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'authentiction/login-style.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("login-button").onclick = function() {
+                window.location.href = "{% url 'authentication:login' %}";
+            };
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Create account</h1>
+    <form method="post" action="{% url 'authentication:register' %}">
+        {% csrf_token %}
+        <label>Username
+            <input type="text" name="username" required autofocus>
+        </label>
+        <label>Password
+            <input type="password" name="password" required>
+        </label>
+        <button type="submit">Create account</button>
+    </form>
+    {% if message %}
+        <h3>{{ message }}</h3>
+    {% endif %}
+    <p>Already have an account?</p><button id="login-button">Log in</button>
+{% endblock %}

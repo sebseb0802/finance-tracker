@@ -1,0 +1,38 @@
+{% extends "finance/finance-base.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block header %}Log in{% endblock %}
+
+{% block extra_css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'authentiction/login-style.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("register-button").onclick = function() {
+                window.location.href = "{% url 'authentication:register' %}";
+            };
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h1>Log in</h1>
+    <form method="post" action="{% url 'authentication:loginProcess' %}">
+        {% csrf_token %}
+        <label>Username
+            <input type="text" name="username" required autofocus>
+        </label>
+        <label>Password
+            <input type="password" name="password" required>
+        </label>
+        <button type="submit">Log in</button>
+    </form>
+    {% if message %}
+        <h3>{{ message }}</h3>
+    {% endif %}
+    <button id="register-button">Register</button>
+{% endblock %}

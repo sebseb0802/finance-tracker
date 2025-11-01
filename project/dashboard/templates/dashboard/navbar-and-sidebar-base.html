@@ -57,12 +57,12 @@
             <li>{% block header-title %}Dashboard{% endblock %}</li>
         </ul>
         <ul class="header-right-side">
-            <li>
-                [User]
-            </li>
-            <li>
-                <button class="header-log-out">Log out</button>
-            </li>
+            {% if request.user.is_authenticated %}
+                <p>Logged in as {{ request.user.username }}</p>
+                <a href="{% url 'authentication:logout' %}">Log out</a>
+            {% else %}
+                <a href="{% url 'authentication:login' %}">Log in</a>
+            {% endif %}
         </ul>
     </div>
     {% block content %}{% endblock %}
