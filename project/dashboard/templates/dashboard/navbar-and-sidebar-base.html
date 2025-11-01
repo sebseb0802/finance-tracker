@@ -50,8 +50,8 @@
                     </ul>
                 </div>
             </li>
-            {% load static %}
             <a href="{% url 'dashboard:dashboard' %}" class="logo-link">
+                {% load static %}
                 <img src="{% static 'dashboard/logo.png' %}">
             </a>
             <li>{% block header-title %}Dashboard{% endblock %}</li>
@@ -68,6 +68,20 @@
             {% endif %}
         </ul>
     </div>
+
+    {% if messages %}
+        <h3>Alert:</h3>
+        <ul>
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                    <li style="color: red">{{ message }}</li>
+                {% else %}
+                    <li style="color: green">{{ message }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     {% block content %}{% endblock %}
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 {% block title %}Log in{% endblock %}
 
-{% block header %}Log in{% endblock %}
+{% block header-title %}Log in{% endblock %}
 
 {% block extra_js %}
     <script>
@@ -20,19 +20,31 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Log in</h1>
-    <form method="post" action="{% url 'authentication:login' %}">
-        {% csrf_token %}
-        <label>Username
-            <input type="text" name="username" required autofocus>
-        </label>
-        <label>Password
-            <input type="password" name="password" required>
-        </label>
-        <button type="submit">Log in</button>
-    </form>
-    {% if message %}
-        <h3>{{ message }}</h3>
+    {% if form.errors %}
+        <h3>Alert:</h3>
+        <ul class="error-messages" style="color: red">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li class="error">{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li class="error">{{ error }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
-    <button id="register-button">Register</button>
+
+    <div class="form-content" style="color: black">
+        <form method="post" action="{% url 'authentication:login' %}">
+            {% csrf_token %}
+            <label>Username:
+                <input type="text" name="username" required autofocus>
+            </label>
+            <label>Password:
+                <input type="password" name="password" required>
+            </label>
+            <button class="submit-button" type="submit">Log in</button>
+        </form>
+        <button class="submit-button" id="register-button">Register</button>
+    </div>
 {% endblock %}

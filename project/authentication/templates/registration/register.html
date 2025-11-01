@@ -2,7 +2,7 @@
 
 {% block title %}Register{% endblock %}
 
-{% block header %}Register{% endblock %}
+{% block header-title %}Register{% endblock %}
 
 {% block extra_js %}
     <script>
@@ -20,40 +20,46 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Register</h1>
-    <form method="post" action="{% url 'authentication:register' %}">
-        {% csrf_token %}
-        
-            <div class="form-group">
+    <div class="form-content">
+        <form method="post" action="{% url 'authentication:register' %}">
+            {% csrf_token %}
+
+
+            {% if form.errors %}
+                <h3>Alert:</h3>
+                <ul class="error-messages" style="color: red">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li class="error">{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li class="error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            
+            <div class="form-group" style="color: black">
                 {% for field in form %}
                     {% if field.label != "Is primary user" %}
                         <label class="field-label">{{ field.label }}: {{ field }}</label>
                     {% endif %}
                 {% endfor %}
+                {% if users %}
+                    <label class="field-label">Invite code: </label><input type="text" name="invite-code" id="invite-code">
+                {% endif %}
             </div>
 
-        {% if form.errors %}
-            <ul class="error-messages">
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li class="error">{{ field.label }}: {{ error }}</li>
-                    {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    <li class="error">{{ error }}</li>
-                {% endfor %}
-            </div>
-        {% endif %}
+            {% if not users %}
+                <p>Since this is the first user to be registered, it will be registered as the primary user with full access permissions.</p>
+                <p>Subsequent users will be added as secondary ones with limited access rights.</p>
+            {% endif %}
 
-        {% if not users %}
-            <p>Since this is the first user to be registered, it will be registered as the primary user with full access permissions.</p>
-            <p>Subsequent users will be added as secondary ones with limited access rights.</p>
-        {% endif %}
+            <button class="submit-button" type="submit">Register</button>
+        </form>
 
-        <button type="submit">Register</button>
-    </form>
-    {% if message %}
-        <h3>{{ message }}</h3>
-    {% endif %}
-    <p>Already have an account?</p><button id="login-button">Log in</button>
+        <p style="color: black">Already have an account?</p><button class="submit-button" id="login-button">Log in</button>
+    </div>
+    
 {% endblock %}

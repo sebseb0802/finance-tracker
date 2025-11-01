@@ -6,7 +6,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed
 
-from finance.models import User
+from finance.models import User, SecondaryUserCode
+
+import uuid
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -19,7 +21,7 @@ class CustomUserCreationForm(UserCreationForm):
         ]
 
 # Create your views here.
-def login(request, message=""):
+def login(request):
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -27,23 +29,16 @@ def login(request, message=""):
         user = authenticate(username=username, password=password)
 
         if user is not None:
+            # Authenticate the user / log the user in
             auth_login(request, user)
-            return redirect("dashboard/")
+
+            return redirect("dashboard:dashboard")
         else:
-            return render(
-            request, 
-            "registration/login.html",
-            {
-                'message': "Incorrect username or password."
-            }
-        )
+            return redirect("authentication:login")
     else:
         return render(
             request, 
-            "registration/login.html",
-            {
-                'message': message
-            }
+            "registration/login.html"
         )
         
 def register(request):
@@ -52,9 +47,21 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid(): # Maybe edit to make validation rules yourself
             user = form.save(commit=False)
-            if len(users) == 0:
+
+            if len(users) > 0:
+                input_invite_code = request.POST["invite-code"]
+                if not SecondaryUserCode.objects.filter(code=input_invite_code).exists():
+                    messages.error(request, "Invalid invite code.")
+                    return redirect("authentication:register")
+                else:
+                    user.save()
+            else:
+                # If there are no prior users, then this new user must be the primary user
                 user.is_primary_user = True
-            user.save()
+                user.save()
+
+                # Create a random 12-digit alphanumeric code to be used to invite secondary members
+                SecondaryUserCode.objects.create(primary_user=user, code=uuid.uuid4().hex[:12].upper())
 
             messages.success(request, "Successfully registered!")
             return redirect("authentication:login")
@@ -73,5 +80,5 @@ def register(request):
 def logout(request):
     if request.method == "POST":
         auth_logout(request)
-        return redirect("login")
+        return redirect("authentication:login")
     return HttpResponseNotAllowed(["POST"])

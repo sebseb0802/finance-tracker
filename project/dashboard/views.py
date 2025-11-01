@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from finance.models import User, Income, Expense
+from finance.models import User, Income, Expense, SecondaryUserCode
 from django.db.models import Q
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
@@ -82,6 +82,7 @@ def dashboard(request):
         "dashboard/dashboard.html", 
         {
             "user": user,
+            "inviteCode": SecondaryUserCode.objects.get(),
             "current_month": current_month,
             "current_year": current_year,
             "current_month_income_total": current_month_income_total,

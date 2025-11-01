@@ -10,6 +10,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
     
+class SecondaryUserCode(models.Model):
+    primary_user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=12, unique=True, editable=False)
+    
 class FinancialObject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # A single user can have many instances of income/expenses/budgets
     value = models.IntegerField(default=0)
