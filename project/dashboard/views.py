@@ -77,12 +77,18 @@ def dashboard(request):
     else:
         current_month = "December"
 
+    users = list(User.objects.filter(is_superuser=False))
+    if len(users) > 0:
+        inviteCode = SecondaryUserCode.objects.get()
+    else:
+        inviteCode = None
+
     return render(
         request, 
         "dashboard/dashboard.html", 
         {
             "user": user,
-            "inviteCode": SecondaryUserCode.objects.get(),
+            "inviteCode": inviteCode,
             "current_month": current_month,
             "current_year": current_year,
             "current_month_income_total": current_month_income_total,
