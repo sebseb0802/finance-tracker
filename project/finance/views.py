@@ -43,7 +43,7 @@ def adjustRelevantBudgetForExpense(expense, type="creation"):
         remainingValueMonth = Budget.objects.get(category=expense.category).remainingValueMonth
         remainingValueYear = Budget.objects.get(category=expense.category).remainingValueYear
 
-        if startDate_parsed.month == current_month:
+        if (startDate_parsed.month == current_month) and (expense.frequency == "One-off"):
             if type == "creation":
                 Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth-int(expense.value)))
             else:
@@ -51,11 +51,14 @@ def adjustRelevantBudgetForExpense(expense, type="creation"):
 
         if expense.frequency == "Monthly":
             # If the frequency of the expense is monthly, then subtract/add 12-times the value of 
-            # the expense from/to the remaining value to be spent of the budget for the entire year
+            # the expense from/to the remaining value to be spent of the budget for the entire year.
+            # Also adjust remaining value to be spent of the budget for the current month
             if type == "creation":
                 Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear-((12-current_month+1) * int(expense.value))))
+                Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth-int(expense.value)))
             else:
                 Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear+((12-current_month+1) * int(expense.value))))
+                Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth+int(expense.value)))
 
         else:
             # Else, subtract/add only the value of the expense
@@ -200,18 +203,21 @@ def addBudget(request):
             for i in range(len(requiredExpenses)):
                 # Iterate through the list of expenses and subtract their respective values from 
                 # the values for remaining monthly and yearly spending of this budget
+                
 
                 expenseValue = requiredExpenses[i].value
                 remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
                 remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
 
-                if requiredExpenses[i].startDate.month == current_month:
+                if (requiredExpenses[i].startDate.month == current_month) and (requiredExpenses[i].frequency == "One-off"):
                     remainingValueMonth -= expenseValue
 
                 if requiredExpenses[i].frequency == "Monthly":
                     # If an expense has a monthly frequency, then subtract 12-times the value of the expense from the
-                    # remaining value to be spent for the budget for this year
+                    # remaining value to be spent for the budget for this year.
+                    # Also adjust remaining value to be spent of the budget for the current month
                     remainingValueYear -= ((12-current_month+1) * expenseValue)
+                    remainingValueMonth -= expenseValue
                 else:
                     # Else, subtract only the value of the expense
                     remainingValueYear -= expenseValue
