@@ -12,7 +12,7 @@
 <h2>Income</h2>
 <ul>
     {% for i in income %}
-        <li>{{ i.source }}: £{{ i.value}} ({{ i.startDate }}, {{ i.frequency }})</li>
+        <li>{{ i.source }}: £{{ i.value}} (Start date: {{ i.startDate }}, {{ i.frequency }})</li>
     {% empty %}
         <li>(None)</li>
     {% endfor %}
@@ -21,7 +21,7 @@
 <h2>Expenses</h2>
 <ul>
     {% for i in expenses %}
-        <li>{{ i.category }} - {{ i.source }}: £{{ i.value}} ({{ i.startDate }}, {{ i.frequency }})</li>
+        <li>{{ i.category }} - {{ i.source }}: £{{ i.value}} (Start date: {{ i.startDate }}, {{ i.frequency }})</li>
     {% empty %}
         <li>(None)</li>
     {% endfor %}

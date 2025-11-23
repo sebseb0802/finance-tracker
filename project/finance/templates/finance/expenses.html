@@ -26,6 +26,15 @@
                     <div><strong>Start date</strong></div><div>{{ i.startDate }}</div>
                     <div><strong>Date added</strong></div><div>{{ i.addDate }}</div>                           
                 </div>
+                <form action="{% url 'finance:deleteFinancialObject' %}" method="post" class="form" style="width:0;height:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="object_id" value="{{ i.id }}">
+                    <input type="hidden" name="finance_type" value="expenses">
+                    <input type="hidden" name="financial_object" value="{{ i }}">
+                    <div class="delete-button">
+                        <input type="submit" value="Delete">
+                    </div>
+                </form>
             </li>
         {% endfor %}
     {% else %}

@@ -16,7 +16,7 @@ from .models import User, Income, Expense, Budget, Report
 
 from .decorators import primary_user_required
 
-# Performs a bubble sort of a given list of financial objects to sort them in ascending order by date of occurrence (startDate)
+# Performs a bubble sort of a given list of financial objects to sort them in ascending order by date of occurrence (startDate).
 # Bubble sort is used because it has a better best-case time complexity than selection sort
 def sortFinancialObjectsByAscendingDate(l):
     swaps = 1
@@ -30,6 +30,39 @@ def sortFinancialObjectsByAscendingDate(l):
                 swaps = swaps + 1
 
     return l
+
+def adjustRelevantBudgetForExpense(expense, type="creation"):
+    current_date = datetime.now()
+    current_month = current_date.month
+
+    startDate_parsed = datetime.strptime(str(expense.startDate), "%Y-%m-%d")
+
+    if Budget.objects.filter(category=expense.category): 
+        # If a budget of this category of expense exists, 
+        # subtract/add the value of this expense from/to the values for remaining monthly and yearly spending of the budget
+        remainingValueMonth = Budget.objects.get(category=expense.category).remainingValueMonth
+        remainingValueYear = Budget.objects.get(category=expense.category).remainingValueYear
+
+        if startDate_parsed.month == current_month:
+            if type == "creation":
+                Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth-int(expense.value)))
+            else:
+                Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth+int(expense.value)))
+
+        if expense.frequency == "Monthly":
+            # If the frequency of the expense is monthly, then subtract/add 12-times the value of 
+            # the expense from/to the remaining value to be spent of the budget for the entire year
+            if type == "creation":
+                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear-((12-current_month+1) * int(expense.value))))
+            else:
+                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear+((12-current_month+1) * int(expense.value))))
+
+        else:
+            # Else, subtract/add only the value of the expense
+            if type == "creation":
+                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear-int(expense.value)))
+            else:
+                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear+int(expense.value)))
 
 @login_required
 def income(request):
@@ -102,32 +135,11 @@ def addExpense(request):
             }
         )
     else:
-        current_date = datetime.now()
-        current_year = current_date.year
-        current_month = current_date.month
-
-        input_startDate_parsed = datetime.strptime(input_startDate, "%Y-%m-%d")
-
-        if Budget.objects.filter(category=input_category): 
-            # If a budget of this category of expense exists, 
-            # subtract the value of this expense from the values for remaining monthly and yearly spending of the budget
-            remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
-            remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
-
-            if input_startDate_parsed.month == current_month:
-                Budget.objects.filter(category=input_category).update(remainingValueMonth=(remainingValueMonth-int(input_value)))
-
-            if input_frequency == "Monthly":
-                # If the frequency of the expense is monthly, then subtract 12-times the value of 
-                # the expense from the remaining value to be spent of the budget for the entire year
-                Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-((12-current_month+1) * int(input_value))))
-            else:
-                # Else, subtract only the value of the expense
-                Budget.objects.filter(category=input_category).update(remainingValueYear=(remainingValueYear-int(input_value)))
-        
         # Create this expense and save it to the database
         expense = Expense(user=User.objects.get(is_primary_user=True), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
         expense.save()
+
+        adjustRelevantBudgetForExpense(expense, "creation")
             
         return HttpResponseRedirect(f"{reverse('finance:expenses')}?message=Expense added successfully.")
 
@@ -211,6 +223,29 @@ def addBudget(request):
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully (previous budget with the same category and frequency was deleted).")
         else:
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully.")
+
+@login_required
+def deleteFinancialObject(request):
+    model_map = {
+        "income": Income,
+        "expenses": Expense,
+        "budgets": Budget
+    }
+
+    object_id = request.POST["object_id"]
+    finance_type = request.POST["finance_type"]
+
+    model = model_map.get(finance_type)
+    object = get_object_or_404(model, id=object_id)
+
+    if finance_type == "expenses":
+        # If the object to be deleted is an Expense, then we need to adjust the relevant budget to reflect this.
+        adjustRelevantBudgetForExpense(object, "deletion")
+
+    # Delete the object
+    object.delete()
+
+    return HttpResponseRedirect(f"{reverse(f'finance:{finance_type}')}?message=Object deleted successfully.")
 
 @login_required
 def reports(request):

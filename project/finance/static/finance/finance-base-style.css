@@ -31,7 +31,6 @@
 
 .card:hover {
     transform: scale(1.05);
-    cursor: pointer;
 }
 
 .card-icon {
@@ -54,7 +53,7 @@
 .form {
     display: flex;
     justify-content: center;
-    margin: 20px;
+
 }
 
 .form-components {
@@ -116,26 +115,4 @@
 
 .success-toast.show {
     transform: translateX(-200px);
-}
-
-.edit-card {
-    width: 500px;
-    background-color: #909fbe;
-    color: black;
-    text-align: center;
-    padding: 10px;
-    position: fixed; /* Stays in position even when scrolling */
-    z-index: 1001;
-    left: 25%;
-    top: 25%;
-    font-size: 16px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    opacity: 0;
-}
-
-.edit-card.show {
-    opacity: 1;
 }
