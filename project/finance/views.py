@@ -17,19 +17,20 @@ from .models import User, Income, Expense, Budget, Report
 from .decorators import primary_user_required
 
 # Performs a bubble sort of a given list of financial objects to sort them in ascending order by date of occurrence (startDate).
-# Bubble sort is used because it has a better best-case time complexity than selection sort
-def sortFinancialObjectsByAscendingDate(l):
+def sortFinancialObjectsByAscendingDate(list):
     swaps = 1
     while swaps > 0:
+        # Loop until no two adjacent objects are swapped (i.e. until all items are in the correct order)
         swaps = 0
-        for i in range(len(l)-1):
-            if l[i].startDate > l[i+1].startDate:
-                temp = l[i]
-                l[i] = l[i+1]
-                l[i+1] = temp
+        for i in range(len(list)-1):
+            if list[i].startDate > list[i+1].startDate:
+                # If two adjacent objects are in the wrong order, swap them
+                temp = list[i]
+                list[i] = list[i+1]
+                list[i+1] = temp
                 swaps = swaps + 1
 
-    return l
+    return list
 
 def adjustRelevantBudgetForExpense(expense, type="creation"):
     current_date = datetime.now()
@@ -70,6 +71,7 @@ def adjustRelevantBudgetForExpense(expense, type="creation"):
 @login_required
 def income(request):
     message = request.GET.get("message", "")
+    # Sorting income in ascending order of date added
     income = sortFinancialObjectsByAscendingDate(list(Income.objects.all()))
     return render(
         request, 
@@ -99,8 +101,12 @@ def addIncome(request):
             }
         )
     else:
-        # Create this income and save it to the database
-        income = Income(user=User.objects.get(is_primary_user=True), value=input_value, source=input_source, frequency=input_frequency, startDate=input_startDate)
+        # Create the income object and save it to the database
+        income = Income(user=User.objects.get(is_primary_user=True), 
+                        value=input_value, 
+                        source=input_source, 
+                        frequency=input_frequency, 
+                        startDate=input_startDate)
         income.save()
             
         return HttpResponseRedirect(f"{reverse('finance:income')}?message=Income added successfully.")
@@ -108,6 +114,7 @@ def addIncome(request):
 @login_required
 def expenses(request):
     message = request.GET.get("message", "")
+    # Sorting expenses in ascending order of date added
     expenses = sortFinancialObjectsByAscendingDate(list(Expense.objects.all()))
     return render(
         request, 
@@ -138,8 +145,13 @@ def addExpense(request):
             }
         )
     else:
-        # Create this expense and save it to the database
-        expense = Expense(user=User.objects.get(is_primary_user=True), category=input_category, value=input_value, frequency=input_frequency, source=input_source, startDate=input_startDate)
+        # Create the expense object and save it to the database
+        expense = Expense(user=User.objects.get(is_primary_user=True), 
+                          category=input_category, 
+                          value=input_value, 
+                          frequency=input_frequency, 
+                          source=input_source, 
+                          startDate=input_startDate)
         expense.save()
 
         adjustRelevantBudgetForExpense(expense, "creation")
@@ -149,7 +161,8 @@ def addExpense(request):
 @login_required
 def budgets(request):
     message = request.GET.get("message", "")
-    budgets = Budget.objects.all()
+    # Sorting budgets in ascending order of date added
+    budgets = sortFinancialObjectsByAscendingDate(list(Budget.objects.all()))
     return render(
         request, 
         "finance/budgets.html", 
@@ -191,8 +204,14 @@ def addBudget(request):
 
         yearlyValue = 12 * input_value # yearlyValue is 12-times the monthly (input) value
         
-        # Create this budget and save it to the database
-        budget = Budget(user=User.objects.get(is_primary_user=True), category=input_category, value=input_value, remainingValueMonth=input_value, startDate=input_startDate, yearlyValue=yearlyValue, remainingValueYear=yearlyValue)
+        # Create the budget object and save it to the database
+        budget = Budget(user=User.objects.get(is_primary_user=True), 
+                        category=input_category, 
+                        value=input_value, 
+                        remainingValueMonth=input_value, 
+                        startDate=input_startDate, 
+                        yearlyValue=yearlyValue, 
+                        remainingValueYear=yearlyValue)
         budget.save()
 
         if Expense.objects.filter(category=input_category):
@@ -384,11 +403,13 @@ def generateReport(request):
     # Returns the PDF content as raw bytes and assigns that to pdf_bytes
     pdf_bytes = HTML(string=report_text).write_pdf()
 
+    # Create the report object to be saved to the database
     report = Report(user=user, reportType=reportType)
 
-    # Creates and saves the report PDF file using the saved bytes from above
+    # Creates and saves the report PDF file to the above report object using the saved bytes from above
     report.file.save(f'{current_datetime}_report.pdf', ContentFile(pdf_bytes))
 
+    # Save the report object to the database
     report.save()
 
     # Report file is downloaded once "Generate report" button is pressed

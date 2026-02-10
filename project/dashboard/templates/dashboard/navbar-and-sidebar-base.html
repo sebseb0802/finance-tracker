@@ -1,14 +1,12 @@
-<!-- All web pages inherit from this one in order to avoid repeating the HTML and CSS for the 
- header and sidebar (and the CSS for the general style of the whole website),
- which will be the same across all web pages -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Title can be changed depending on the webpage -->
     <title>{% block title %}Finance App{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'dashboard/navbar-and-sidebar-base-style.css' %}">
+    <!-- Extra CSS and JS can be added if required for the webpage -->
     {% block extra_css %}{% endblock %}
     <script src="{% static 'dashboard/navbar-and-sidebar-base-script.js' %}"></script>
     {% block extra_js %}{% endblock %}
@@ -69,6 +67,7 @@
         </ul>
     </div>
 
+    <!-- If any success or error messages need to be displayed, this is done here -->
     {% if messages %}
         <h3>Alert:</h3>
         <ul>
@@ -82,6 +81,7 @@
         </ul>
     {% endif %}
 
+    <!-- The main content for all templates that inherit from this one goes here -->
     {% block content %}{% endblock %}
 </body>
 </html>

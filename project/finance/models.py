@@ -43,3 +43,6 @@ class Report(models.Model):
     reportType = models.CharField(default="Month", max_length=200)
     file = models.FileField(upload_to="reports/")
     creationDate = models.DateTimeField(auto_now_add=True)
+
+
+    
