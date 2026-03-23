@@ -218,6 +218,9 @@ def addBudget(request):
             # If expenses for this category already exist, 
             # create a list of them
             requiredExpenses = get_list_or_404(Expense.objects.filter(category=input_category))
+            
+            remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
+            remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
                     
             for i in range(len(requiredExpenses)):
                 # Iterate through the list of expenses and subtract their respective values from 
@@ -225,8 +228,6 @@ def addBudget(request):
                 
 
                 expenseValue = requiredExpenses[i].value
-                remainingValueMonth = Budget.objects.get(category=input_category).remainingValueMonth
-                remainingValueYear = Budget.objects.get(category=input_category).remainingValueYear
 
                 if (requiredExpenses[i].startDate.month == current_month) and (requiredExpenses[i].frequency == "One-off"):
                     remainingValueMonth -= expenseValue
@@ -241,7 +242,7 @@ def addBudget(request):
                     # Else, subtract only the value of the expense
                     remainingValueYear -= expenseValue
 
-                Budget.objects.filter(category=input_category).update(remainingValueMonth=remainingValueMonth, remainingValueYear=remainingValueYear)
+            Budget.objects.filter(category=input_category).update(remainingValueMonth=remainingValueMonth, remainingValueYear=remainingValueYear)
 
         if deletedBudget == True:
             # If a previous budget was deleted, inform the user in the returned message
