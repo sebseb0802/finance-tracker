@@ -246,7 +246,7 @@ def addBudget(request):
 
         if deletedBudget == True:
             # If a previous budget was deleted, inform the user in the returned message
-            return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully (previous budget with the same category and frequency was deleted).")
+            return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully (previous budget with the same category was deleted).")
         else:
             return HttpResponseRedirect(f"{reverse('finance:budgets')}?message=Budget added successfully.")
 
