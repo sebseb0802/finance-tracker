@@ -36,31 +36,30 @@ def adjustRelevantBudgetForExpense(expense, type="creation"):
     current_date = datetime.now()
     current_month = current_date.month
 
-    startDate_parsed = datetime.strptime(str(expense.startDate), "%Y-%m-%d")
-
     if Budget.objects.filter(category=expense.category): 
         # If a budget of this category of expense exists, 
-        # subtract/add the value of this expense from/to the values for remaining monthly and yearly spending of the budget
+        # subtract/add the value of this expense from/to the values for remaining monthly and yearly spending of the budget,
+        # depending on whether an expense is being created or destroyed.
         remainingValueMonth = Budget.objects.get(category=expense.category).remainingValueMonth
         remainingValueYear = Budget.objects.get(category=expense.category).remainingValueYear
 
-        if (startDate_parsed.month == current_month) and (expense.frequency == "One-off"):
+        if (expense.startDate.month == current_month) and (expense.frequency == "One-off"):
             if type == "creation":
                 Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth-int(expense.value)))
             else:
                 Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth+int(expense.value)))
 
         if expense.frequency == "Monthly":
-            # If the frequency of the expense is monthly, then subtract/add 12-times the value of 
-            # the expense from/to the remaining value to be spent of the budget for the entire year.
-            # Also adjust remaining value to be spent of the budget for the current month
             if type == "creation":
-                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear-((12-current_month+1) * int(expense.value))))
-                Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth-int(expense.value)))
+                if expense.startDate.month <= current_month:
+                    remainingValueMonth -= expense.value
+                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear-((12-expense.startDate.month+1) * int(expense.value))))
+                Budget.objects.filter(category=expense.category).update(remainingValueMonth=remainingValueMonth)
             else:
-                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear+((12-current_month+1) * int(expense.value))))
-                Budget.objects.filter(category=expense.category).update(remainingValueMonth=(remainingValueMonth+int(expense.value)))
-
+                if expense.startDate.month <= current_month:
+                    remainingValueMonth += expense.value
+                Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear+((12-expense.startDate.month+1) * int(expense.value))))
+                Budget.objects.filter(category=expense.category).update(remainingValueMonth=remainingValueMonth)
         else:
             # Else, subtract/add only the value of the expense
             if type == "creation":
@@ -68,6 +67,7 @@ def adjustRelevantBudgetForExpense(expense, type="creation"):
             else:
                 Budget.objects.filter(category=expense.category).update(remainingValueYear=(remainingValueYear+int(expense.value)))
 
+# The user must be logged in in order to access the income page.
 @login_required
 def income(request):
     message = request.GET.get("message", "")
@@ -82,6 +82,7 @@ def income(request):
         }
     )
 
+# The user must be logged in and must be a primary user in order to add income.
 @login_required
 @primary_user_required
 def addIncome(request):
@@ -191,7 +192,6 @@ def addBudget(request):
         )
     else:
         current_date = datetime.now()
-        current_year = current_date.year
         current_month = current_date.month
 
         deletedBudget = False
@@ -225,7 +225,6 @@ def addBudget(request):
             for i in range(len(requiredExpenses)):
                 # Iterate through the list of expenses and subtract their respective values from 
                 # the values for remaining monthly and yearly spending of this budget
-                
 
                 expenseValue = requiredExpenses[i].value
 
@@ -233,11 +232,11 @@ def addBudget(request):
                     remainingValueMonth -= expenseValue
 
                 if requiredExpenses[i].frequency == "Monthly":
-                    # If an expense has a monthly frequency, then subtract 12-times the value of the expense from the
-                    # remaining value to be spent for the budget for this year.
-                    # Also adjust remaining value to be spent of the budget for the current month
-                    remainingValueYear -= ((12-current_month+1) * expenseValue)
-                    remainingValueMonth -= expenseValue
+                    # If an expense has a monthly frequency, then subtract the cost that the expense has incurred up until this point
+                    # Also adjust remaining value to be spent of the budget for the current month if the expense's start date has already passed
+                    remainingValueYear -= (12 - requiredExpenses[i].startDate.month + 1) * expenseValue
+                    if requiredExpenses[i].startDate.month <= current_month:
+                        remainingValueMonth -= expenseValue
                 else:
                     # Else, subtract only the value of the expense
                     remainingValueYear -= expenseValue
@@ -293,7 +292,7 @@ def generateReport(request):
             if l[i].frequency == "Monthly" and timeframe == "Year":
                 # If the FinancialObject has a monthly frequency, and the specified timeframe for the summation is a year,
                 # then multiply the value of the FinancialObject by 12 to account for this
-                value_to_add = (12-l[i].startDate.month+1) * l[i].value
+                value_to_add = (12 - l[i].startDate.month + 1) * l[i].value
             else:
                 # Else, simply add the value of the FinancialObject
                 value_to_add = l[i].value

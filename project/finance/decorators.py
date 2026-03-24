@@ -14,5 +14,3 @@ def primary_user_required(view_function):
             return redirect(f"finance:{current_page}")
         return view_function(request, *args, **kwargs)
     return _wrapped_view
-
-
