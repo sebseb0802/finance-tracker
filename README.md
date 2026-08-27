@@ -1,8 +1,7 @@
 # finance-tracker
 
 ## Overview
-- This is a project that I am working on as part of my IB Diploma Programme Computer Science course for a client.
-- The project will be hosted on the web for ease of access from both a laptop and a phone, and thus it will be made using a Python Django backend framework.
+- This is a project that I worked on as part of my IB Diploma Programme Computer Science course for a client using HTML/CSS/JavaScript and a Python Django backend.
 - The premise of the product is that it will allow the user to input various sources of income, types of expenses, and any budgets that they wish to set up.
 - More specifically, when the project is complete, the client should be able to:
   - input their monthly and yearly incomes
